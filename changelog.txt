@@ -1,0 +1,34 @@
+-----------------------------------------------------------------------------------
+				Change log- updated to Bootstrap v4.2.1
+-----------------------------------------------------------------------------------
+
+=======================================================
+Add New Pages:-
+=======================================================
+
+1) form-bootstrap-validation	
+
+2) ui-spinner			
+
+3) ui-scrollspy			
+
+4) ui-toasts
+
+
+=======================================================
+Updated Pages:-
+=======================================================
+
+1) ui-bootstrap		- Range
+
+2) ui-modal		- Extra Large modal Click on image, Scrolling long content, Vertically Center, Tooltips & Popovers, Modal with Grid, 
+
+3) ui-buttons		- Different Menu Content, Button Toolbar with Input Group, Toggle States [Button Plugin], Checkbox buttons with Click[Checked] event, Radio buttons with Click[Checked] event
+
+4) ui-list-media	- JavaScript behavior
+
+5) ui-carousel		- With Individual Interval
+
+6) ui-grid		- Gutters, Order classes, Offsetting columns, Nesting
+
+7) form-basic		- Custom File Uploads with different languages, 
