@@ -151,28 +151,8 @@
             console.log("Token:", data.token);
             $("#token").text(`Token: ${data.token}`);
             localStorage.setItem("token", data.token);
+            console.log("Decoded:", parseJwt(data.token));
             $(location).attr("href", "index.html");
-            // // Get users
-            // $.ajax({
-            //   method: "GET",
-            //   url: `${apiBasePath}/users`,
-            //   dataType: "json",
-            //   beforeSend: (jqXHR, settings) => {
-            //     jqXHR.setRequestHeader("Authorization", `Bearer ${localStorage.getItem('token')}`);
-            //   },
-            //   cache: false
-            // })
-            //   .done((data, textStatus, jqXHR) => {
-            //     console.log("Text Status:", textStatus);
-            //     console.log("Data:", data);
-            //     console.log("jqXHR:", jqXHR);
-            //     //$("#users").text(JSON.stringify(data));
-            //   })
-            //   .fail((jqXHR, textStatus, errorThrown) => {
-            //     console.error("jqXHR:", jqXHR);
-            //     console.error("Text Status:", textStatus);
-            //     console.error("Error Thrown:", errorThrown);
-            //   });
           })
           .fail((jqXHR, textStatus, errorThrown) => {
             console.error("jqXHR:", jqXHR);
@@ -185,6 +165,19 @@
         $("#loginform").slideUp();
         $("#recoverform").fadeIn();
       });
+
+      function parseJwt(token) {
+        var base64Url = token.split(".")[1];
+        var base64 = decodeURIComponent(
+          atob(base64Url)
+            .split("")
+            .map(function(c) {
+              return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+            })
+            .join("")
+        );
+        return JSON.parse(base64);
+      }
     </script>
   </body>
 </html>
