@@ -1,183 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <!-- Tell the browser to be responsive to screen width -->
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png" />
-    <title>Servee.io Admin Portal</title>
 
-    <!-- page css -->
-    <link href="dist/css/pages/login-register-lock.css" rel="stylesheet" />
-    <!-- Custom CSS -->
-    <link href="dist/css/style.min.css" rel="stylesheet" />
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <!-- Favicon icon -->
+  <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png" />
+  <title>Servee.io Admin Portal</title>
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
+  <!-- page css -->
+  <link href="dist/css/pages/login-register-lock.css" rel="stylesheet" />
+  <!-- Custom CSS -->
+  <link href="dist/css/style.min.css" rel="stylesheet" />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-  </head>
+</head>
 
-  <body class="skin-default card-no-border">
-    <!-- ============================================================== -->
-    <!-- Preloader - style you can find in spinners.css -->
-    <!-- ============================================================== -->
-    <div class="preloader">
-      <div class="loader">
-        <div class="loader__figure"></div>
-        <p class="loader__label">Servee.io</p>
-      </div>
+<body class="skin-default card-no-border">
+  <!-- ============================================================== -->
+  <!-- Preloader - style you can find in spinners.css -->
+  <!-- ============================================================== -->
+  <div class="preloader">
+    <div class="loader">
+      <div class="loader__figure"></div>
+      <p class="loader__label">Servee.io</p>
     </div>
-    <!-- ============================================================== -->
-    <!-- Main wrapper - style you can find in pages.scss -->
-    <!-- ============================================================== -->
-    <section id="wrapper">
-      <div class="login-register" style="background-image:url(../assets/images/background/login-register.jpg);">
-        <div class="login-box card">
-          <div class="card-body">
-            <form class="form-horizontal form-material" id="loginform">
-              <h3 class="text-center m-b-20">Sign In</h3>
-              <div class="form-group ">
-                <div class="col-xs-12">
-                  <input class="form-control" type="text" id="email" required="" placeholder="Email" />
-                </div>
+  </div>
+  <!-- ============================================================== -->
+  <!-- Main wrapper - style you can find in pages.scss -->
+  <!-- ============================================================== -->
+  <section id="wrapper">
+    <div class="login-register" style="background-image:url(../assets/images/background/login-register.jpg);">
+      <div class="login-box card">
+        <div class="card-body">
+          <form class="form-horizontal form-material" id="loginform">
+            <h3 class="text-center m-b-20">Sign In</h3>
+            <div class="form-group ">
+              <div class="col-xs-12">
+                <input class="form-control" type="text" id="email" required="" placeholder="Email" />
               </div>
-              <div class="form-group">
-                <div class="col-xs-12">
-                  <input class="form-control" type="password" id="password" required="" placeholder="Password" />
-                </div>
+            </div>
+            <div class="form-group">
+              <div class="col-xs-12">
+                <input class="form-control" type="password" id="password" required="" placeholder="Password" />
               </div>
-              <div class="form-group row">
-                <div class="col-md-12">
-                  <div class="d-flex no-block align-items-center">
-                    <div class="custom-control custom-checkbox">
-                      <input type="checkbox" class="custom-control-input" id="customCheck1" />
-                      <label class="custom-control-label" for="customCheck1">Remember me</label>
-                    </div>
-                    <div class="ml-auto">
-                      <a href="javascript:void(0)" id="to-recover" class="text-muted"><i class="fas fa-lock m-r-5"></i> Forgot pwd?</a>
-                    </div>
+            </div>
+            <div class="form-group row">
+              <div class="col-md-12">
+                <div class="d-flex no-block align-items-center">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="rememberMe" />
+                    <label class="custom-control-label" for="rememberMe">Remember me</label>
+                  </div>
+                  <div class="ml-auto">
+                    <a href="javascript:void(0)" id="to-recover" class="text-muted"><i class="fas fa-lock m-r-5"></i>
+                      Forgot pwd?</a>
                   </div>
                 </div>
               </div>
-              <div class="form-group text-center">
-                <div class="col-xs-12 p-b-20">
-                  <button class="btn btn-block btn-lg btn-info btn-rounded" type="submit">Log In</button>
+            </div>
+            <div class="form-group text-center">
+              <div id="error" style="display:none" class="alert alert-danger" role="alert">
+              </div>
+              <div class="col-xs-12 p-b-20">
+                <button class="btn btn-block btn-lg btn-info btn-rounded" type="submit">Log In</button>
+              </div>
+            </div>
+            <!-- <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-12 m-t-10 text-center">
+                <div class="social">
+                  <button class="btn  btn-facebook" data-toggle="tooltip" title="Login with Facebook"><i
+                      aria-hidden="true" class="fab fa-facebook-f"></i></button>
+                  <button class="btn btn-googleplus" data-toggle="tooltip" title="Login with Google"><i
+                      aria-hidden="true" class="fab fa-google-plus-g"></i></button>
                 </div>
               </div>
-              <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-12 m-t-10 text-center">
-                  <div class="social">
-                    <button class="btn  btn-facebook" data-toggle="tooltip" title="Login with Facebook"><i aria-hidden="true" class="fab fa-facebook-f"></i></button>
-                    <button class="btn btn-googleplus" data-toggle="tooltip" title="Login with Google"><i aria-hidden="true" class="fab fa-google-plus-g"></i></button>
-                  </div>
-                </div>
+            </div> -->
+            <div class="form-group m-b-0">
+              <div class="col-sm-12 text-center">
+                Don't have an account? <a href="pages-register.html" class="text-info m-l-5"><b>Sign Up</b></a>
               </div>
-              <div class="form-group m-b-0">
-                <div class="col-sm-12 text-center">
-                  Don't have an account? <a href="pages-register.html" class="text-info m-l-5"><b>Sign Up</b></a>
-                </div>
+            </div>
+          </form>
+          <form class="form-horizontal" id="recoverform" action="index.html">
+            <div class="form-group">
+              <div class="col-xs-12">
+                <h3>Recover Password</h3>
+                <p class="text-muted">Enter your Email and a new code will be sent to you!</p>
               </div>
-            </form>
-            <form class="form-horizontal" id="recoverform" action="index.html">
-              <div class="form-group ">
-                <div class="col-xs-12">
-                  <h3>Recover Password</h3>
-                  <p class="text-muted">Enter your Email and instructions will be sent to you!</p>
-                </div>
+            </div>
+            <div class="form-group">
+              <div class="col-xs-12">
+                <input id="recoverEmail" class="form-control" type="text" required="" placeholder="Email" />
               </div>
-              <div class="form-group ">
-                <div class="col-xs-12">
-                  <input class="form-control" type="text" required="" placeholder="Email" />
-                </div>
+            </div>
+            <div class="form-group text-center m-t-20">
+              <div class="col-xs-12">
+                <button id="recoverPassword"
+                  class="btn btn-primary btn-lg btn-block text-uppercase waves-effect waves-light" type="submit">Reset
+                  Password</button>
               </div>
-              <div class="form-group text-center m-t-20">
-                <div class="col-xs-12">
-                  <button class="btn btn-primary btn-lg btn-block text-uppercase waves-effect waves-light" type="submit">Reset</button>
-                </div>
+            </div>
+            <div class="form-group text-center m-t-20">
+              <div class="col-xs-12">
+                <button id="cancel-recover"
+                  class="btn btn-secondary btn-lg btn-block text-uppercase waves-effect waves-light"
+                  type="submit">Cancel</button>
               </div>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ============================================================== -->
-    <!-- End Wrapper -->
-    <!-- ============================================================== -->
-    <!-- ============================================================== -->
-    <!-- All Jquery -->
-    <!-- ============================================================== -->
-    <script src="../assets/node_modules/jquery/jquery-3.2.1.min.js"></script>
-    <!-- Bootstrap tether Core JavaScript -->
-    <script src="../assets/node_modules/popper/popper.min.js"></script>
-    <script src="../assets/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-    <!--Custom JavaScript -->
-    <script type="text/javascript">
-      const apiBasePath = "https://api.comply-online.com/api/v1";
+  <!-- ============================================================== -->
+  <!-- End Wrapper -->
+  <!-- ============================================================== -->
+  <!-- ============================================================== -->
+  <!-- All Jquery -->
+  <!-- ============================================================== -->
+  <script src="../assets/node_modules/jquery/jquery-3.2.1.min.js"></script>
+  <!-- Bootstrap tether Core JavaScript -->
+  <script src="../assets/node_modules/popper/popper.min.js"></script>
+  <script src="../assets/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+  <!-- AWS -->
+  <script src="./dist/js/amazon-cognito-identity.min.js"></script>
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.487.0.min.js"></script>
+  <!--Custom JavaScript -->
+  <script type="text/javascript">
+    $(function () {
+      $(".preloader").fadeOut();
+    });
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+    });
+    // ==============================================================
+    // Login and Recover Password
+    // ==============================================================
+    $("#loginform").submit(event => {
+      event.preventDefault();
+      clearError();
 
-      $(function() {
-        $(".preloader").fadeOut();
-      });
-      $(function() {
-        $('[data-toggle="tooltip"]').tooltip();
-      });
-      // ==============================================================
-      // Login and Recover Password
-      // ==============================================================
-      $("#loginform").submit(event => {
-        event.preventDefault();
-        $.ajax({
-          method: "POST",
-          url: `${apiBasePath}/oauth/login`,
-          contentType: "application/json",
-          dataType: "json",
-          cache: false,
-          data: JSON.stringify({
-            email: $("#email").val(),
-            password: $("#password").val()
-          })
-        })
-          .done((data, textStatus, jqXHR) => {
-            console.log("Text Status:", textStatus);
-            console.log("Data:", data);
-            console.log("jqXHR:", jqXHR);
-            console.log("Token:", data.token);
-            $("#token").text(`Token: ${data.token}`);
-            localStorage.setItem("token", data.token);
-            console.log("Decoded:", parseJwt(data.token));
+      var authenticationData = {
+        Username: $("#email").val(),
+        Password: $("#password").val()
+      };
+
+      var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
+      var poolData = {
+        UserPoolId: 'eu-central-1_7iruUqdsk',
+        ClientId: '3gbfhl35avtb3uop6o5scbd0sd'
+      };
+      var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+      var userData = {
+        Username: $("#email").val(),
+        Pool: userPool
+      };
+      var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+      cognitoUser.authenticateUser(authenticationDetails, {
+        onSuccess: function (result) {
+          console.log("Success!");
+          var accessToken = result.getAccessToken().getJwtToken();
+          console.log("Access Token:", accessToken);
+          /* Use the idToken for Logins Map when Federating User Pools with identity pools or when passing through an Authorization Header to an API Gateway Authorizer*/
+          var idToken = result.idToken.jwtToken;
+          console.log("Id Token:", idToken);
+          // $("#token").text(`Token: ${accessToken}`);
+          // localStorage.setItem("token", accessToken);
+          var decodedIdToken = parseJwt(accessToken);
+          console.log("Decoded Id Token:", decodedIdToken);
+          if (decodedIdToken["cognito:groups"] && decodedIdToken["cognito:groups"].includes("Administrators")) {
+            if ($("#rememberMe").prop("checked")) {
+              // Remember device
+              cognitoUser.setDeviceStatusRemembered({
+                onSuccess: function (result) {
+                  console.log('call result: ' + result);
+                },
+                onFailure: function (err) {
+                  console.error(err);
+                  //TODO Always returns "Network Error"??
+                  //alert(err.message);
+                }
+              });
+            } else {
+              // Do not remember device
+              cognitoUser.setDeviceStatusNotRemembered({
+                onSuccess: function (result) {
+                  console.log('call result: ' + result);
+                },
+                onFailure: function (err) {
+                  console.error(err);
+                  //alert(err.message);
+                }
+              });
+            }
             $(location).attr("href", "index.html");
+          } else {
+            showError("You are not authorized to use this service");
+            return;
+          }
+        },
+        onFailure: function (err) {
+          console.log(err);
+          showError(err.message);
+        },
+
+      });
+    });
+
+    function showError(message) {
+      $("#error").html(message);
+      $("#error").show();
+    }
+    function clearError() {
+      $("#error").hide();
+    }
+
+    // $("#loginform").submit(event => {
+    //   event.preventDefault();
+    //   $.ajax({
+    //     method: "POST",
+    //     url: `${apiBasePath}/oauth/login`,
+    //     contentType: "application/json",
+    //     dataType: "json",
+    //     cache: false,
+    //     data: JSON.stringify({
+    //       email: $("#email").val(),
+    //       password: $("#password").val()
+    //     })
+    //   })
+    //     .done((data, textStatus, jqXHR) => {
+    //       console.log("Text Status:", textStatus);
+    //       console.log("Data:", data);
+    //       console.log("jqXHR:", jqXHR);
+    //       console.log("Token:", data.token);
+    //       $("#token").text(`Token: ${data.token}`);
+    //       localStorage.setItem("token", data.token);
+    //       console.log("Decoded:", parseJwt(data.token));
+    //       $(location).attr("href", "index.html");
+    //     })
+    //     .fail((jqXHR, textStatus, errorThrown) => {
+    //       console.error("jqXHR:", jqXHR);
+    //       console.error("Text Status:", textStatus);
+    //       console.error("Error Thrown:", errorThrown);
+    //     });
+    // });
+
+    $("#to-recover").on("click", function () {
+      $("#loginform").slideUp();
+      $("#recoverform").fadeIn();
+    });
+
+    $("#cancel-recover").on("click", function () {
+      $("#recoverform").fadeOut();
+      $("#loginform").slideToggle();
+    });
+
+    $("#recoverPassword").on("click", (event) => {
+      event.preventDefault();
+
+      var poolData = {
+        UserPoolId: 'eu-central-1_7iruUqdsk',
+        ClientId: '3gbfhl35avtb3uop6o5scbd0sd'
+      };
+
+      var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+      var userData = {
+        Username: $("#recoverEmail").val(),
+        Pool: userPool
+      };
+      var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+
+      cognitoUser.forgotPassword({
+        onSuccess: function (result) {
+          console.log('call result: ' + result);
+        },
+        onFailure: function (err) {
+          console.error(err);
+          alert(err);
+        },
+        inputVerificationCode() {
+          var verificationCode = prompt('Please input verification code ', '');
+          var newPassword = prompt('Enter new password ', '');
+          cognitoUser.confirmPassword(verificationCode, newPassword, this);
+        }
+      });
+    });
+
+    function parseJwt(token) {
+      var base64Url = token.split(".")[1];
+      var base64 = decodeURIComponent(
+        atob(base64Url)
+          .split("")
+          .map(function (c) {
+            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
           })
-          .fail((jqXHR, textStatus, errorThrown) => {
-            console.error("jqXHR:", jqXHR);
-            console.error("Text Status:", textStatus);
-            console.error("Error Thrown:", errorThrown);
-          });
-      });
+          .join("")
+      );
+      return JSON.parse(base64);
+    }
+  </script>
+</body>
 
-      $("#to-recover").on("click", function() {
-        $("#loginform").slideUp();
-        $("#recoverform").fadeIn();
-      });
-
-      function parseJwt(token) {
-        var base64Url = token.split(".")[1];
-        var base64 = decodeURIComponent(
-          atob(base64Url)
-            .split("")
-            .map(function(c) {
-              return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-            })
-            .join("")
-        );
-        return JSON.parse(base64);
-      }
-    </script>
-  </body>
 </html>

@@ -10,14 +10,14 @@
     <meta name="author" content="">
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png">
-    <title>Elite Admin Template - The Ultimate Multipurpose admin template</title>
-    
+    <title>Servee - Register</title>
+
     <!-- page css -->
     <link href="dist/css/pages/login-register-lock.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="dist/css/style.min.css" rel="stylesheet">
-    
-    
+
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
     <div class="preloader">
         <div class="loader">
             <div class="loader__figure"></div>
-            <p class="loader__label">Elite admin</p>
+            <p class="loader__label">Servee</p>
         </div>
     </div>
     <!-- ============================================================== -->
@@ -47,40 +47,56 @@
                         <h3 class="text-center m-b-20">Sign Up</h3>
                         <div class="form-group">
                             <div class="col-xs-12">
-                                <input class="form-control" type="text" required="" placeholder="Name">
-                            </div>
-                        </div>
-                        <div class="form-group ">
-                            <div class="col-xs-12">
-                                <input class="form-control" type="text" required="" placeholder="Email">
-                            </div>
-                        </div>
-                        <div class="form-group ">
-                            <div class="col-xs-12">
-                                <input class="form-control" type="password" required="" placeholder="Password">
+                                <input id="firstName" class="form-control" type="text" required=""
+                                    placeholder="First Name" value="Pierrick">
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-xs-12">
-                                <input class="form-control" type="password" required="" placeholder="Confirm Password">
+                                <input id="lastName" class="form-control" type="text" required=""
+                                    placeholder="Last Name" value="Lozach">
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <div class="col-xs-12">
+                                <input id="email" class="form-control" type="text" required="" placeholder="Email"
+                                    value="smartserveteam+test@gmail.com">
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <div class="col-xs-12">
+                                <input id="password" class="form-control" type="password" required=""
+                                    placeholder="Password" value="Vero052424!">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <input class="form-control" type="password" required="" placeholder="Confirm Password"
+                                    value="Vero052424!">
                             </div>
                         </div>
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input" id="customCheck1">
-                                    <label class="custom-control-label" for="customCheck1">I agree to all <a href="javascript:void(0)">Terms</a></label> 
-                                </div> 
+                                    <label class="custom-control-label" for="customCheck1">I agree to all <a
+                                            href="javascript:void(0)">Terms</a></label>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group text-center p-b-20">
+                            <div id="error" style="display:none" class="alert alert-danger" role="alert">
+                            </div>
                             <div class="col-xs-12">
-                                <button class="btn btn-info btn-lg btn-block btn-rounded text-uppercase waves-effect waves-light" type="submit">Sign Up</button>
+                                <button
+                                    class="btn btn-info btn-lg btn-block btn-rounded text-uppercase waves-effect waves-light"
+                                    type="submit">Sign Up</button>
                             </div>
                         </div>
                         <div class="form-group m-b-0">
                             <div class="col-sm-12 text-center">
-                                Already have an account? <a href="pages-login.html" class="text-info m-l-5"><b>Sign In</b></a>
+                                Already have an account? <a href="pages-login.html" class="text-info m-l-5"><b>Sign
+                                        In</b></a>
                             </div>
                         </div>
                     </form>
@@ -88,6 +104,34 @@
             </div>
         </div>
     </section>
+    <!-- Code Confirmation Modal -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Enter code confirmation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="confirmationForm">
+                    <div class="modal-body">
+                        <p>Please check your email and enter the code that you have received</p>
+                        <div class="form-group">
+                            <label for="code" class="col-form-label">Code:</label>
+                            <input type="text" class="form-control" id="code">
+                        </div>
+                        <a href="#" id="resendCode">Resend code</a>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- ============================================================== -->
     <!-- End Wrapper -->
     <!-- ============================================================== -->
@@ -98,17 +142,108 @@
     <!-- Bootstrap tether Core JavaScript -->
     <script src="../assets/node_modules/popper/popper.min.js"></script>
     <script src="../assets/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- AWS -->
+    <script src="./dist/js/amazon-cognito-identity.min.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.487.0.min.js"></script>
+    <!--Custom JavaScript -->
     <script type="text/javascript">
-        $(function() {
+        $(function () {
             $(".preloader").fadeOut();
         });
-        $(function() {
+        $(function () {
             $('[data-toggle="tooltip"]').tooltip()
         });
+
+        $("#resendCode").click(() => {
+            cognitoUser.resendConfirmationCode(function (err, result) {
+                if (err) {
+                    alert("Failed to resend confirmation code");
+                    return;
+                }
+                alert("A new code was sent to you");
+            });
+        })
+
+        $("#loginform").submit(event => {
+            event.preventDefault();
+            clearError();
+
+            var poolData = {
+                UserPoolId: 'eu-central-1_7iruUqdsk',
+                ClientId: '3gbfhl35avtb3uop6o5scbd0sd'
+            };
+            var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+
+            var attributeList = [];
+
+            var dataFirstName = {
+                Name: 'given_name',
+                Value: $("#firstName").val()
+            };
+            var dataLastName = {
+                Name: 'family_name',
+                Value: $("#lastName").val()
+            };
+            var dataEmail = {
+                Name: 'email',
+                Value: $("#email").val()
+            };
+            var attributeFirstName = new AmazonCognitoIdentity.CognitoUserAttribute(dataFirstName);
+            var attributeLastName = new AmazonCognitoIdentity.CognitoUserAttribute(dataLastName);
+            var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail);
+
+            attributeList.push(attributeFirstName);
+            attributeList.push(attributeLastName);
+            attributeList.push(attributeEmail);
+
+            userPool.signUp($("#email").val(), $("#password").val(), attributeList, null, function (err, result) {
+                if (err) {
+                    showError(err);
+                    return;
+                }
+                cognitoUser = result.user;
+                console.log('user name is ' + cognitoUser.getUsername());
+                // Show confirmation modal dialog
+                $("#confirmationModal #code").empty();
+                $('#confirmationModal').modal('show');
+            });
+        });
+
+        $('#confirmationModal').on('shown.bs.modal', function () {
+            $('#code').trigger('focus')
+        })
+
+        $("#confirmationForm").submit(event => {
+            event.preventDefault();
+            confirmRegistration($("#code").val());
+        });
+
+        function confirmRegistration(code) {
+            cognitoUser.confirmRegistration(code, true, function (err, result) {
+                if (err) {
+                    alert(err.message);
+                    return;
+                }
+                if (result === "SUCCESS") {
+                    $(location).attr("href", "pages-login.html");
+                }
+            });
+        }
+
+        function showError(message) {
+            console.error(message);
+            $("#error").text(message.message);
+            $("#error").show();
+        }
+
+        function clearError() {
+            $("#error").hide();
+        }
+
         // ============================================================== 
         // Login and Recover Password 
         // ============================================================== 
-        $('#to-recover').on("click", function() {
+        $('#to-recover').on("click", function () {
             $("#loginform").slideUp();
             $("#recoverform").fadeIn();
         });

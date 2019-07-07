@@ -23,5 +23,8 @@
         "gulp-sass": "^3.1.0",
         "gulp-uglify": "^3.0.0"
     },
-    "dependencies": {}
+    "dependencies": {
+        "amazon-cognito-identity-js": "^3.0.13",
+        "aws-amplify": "^1.1.29"
+    }
 }
