@@ -105,16 +105,13 @@
             </div>
             <div class="form-group text-center m-t-20">
               <div class="col-xs-12">
-                <button id="recoverPassword"
-                  class="btn btn-primary btn-lg btn-block text-uppercase waves-effect waves-light" type="submit">Reset
+                <button id="recoverPassword" class="btn btn-primary btn-lg btn-block text-uppercase waves-effect waves-light" type="submit">Reset
                   Password</button>
               </div>
             </div>
             <div class="form-group text-center m-t-20">
               <div class="col-xs-12">
-                <button id="cancel-recover"
-                  class="btn btn-secondary btn-lg btn-block text-uppercase waves-effect waves-light"
-                  type="submit">Cancel</button>
+                <button id="cancel-recover" class="btn btn-secondary btn-lg btn-block text-uppercase waves-effect waves-light" type="submit">Cancel</button>
               </div>
             </div>
           </form>
@@ -136,6 +133,7 @@
   <!-- AWS -->
   <script src="./dist/js/amazon-cognito-identity.min.js"></script>
   <script src="https://sdk.amazonaws.com/js/aws-sdk-2.487.0.min.js"></script>
+  <script src="./dist/js/auth.js"></script>
   <!--Custom JavaScript -->
   <script type="text/javascript">
     $(function () {
@@ -151,110 +149,44 @@
       event.preventDefault();
       clearError();
 
-      var authenticationData = {
-        Username: $("#email").val(),
-        Password: $("#password").val()
-      };
+      $.ajax({
+        method: "POST",
+        url: `${authApiBasePath}/auth`,
+        contentType: "application/json",
+        dataType: "json",
+        cache: false,
+        data: JSON.stringify({
+          username: $("#email").val(),
+          password: $("#password").val()
+        })
+      })
+        .done((data, textStatus, jqXHR) => {
+          console.log("Text Status:", textStatus);
+          console.log("Data:", data);
+          console.log("jqXHR:", jqXHR);
 
-      var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
-      var poolData = {
-        UserPoolId: 'eu-central-1_7iruUqdsk',
-        ClientId: '3gbfhl35avtb3uop6o5scbd0sd'
-      };
-      var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-      var userData = {
-        Username: $("#email").val(),
-        Pool: userPool
-      };
-      var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-      cognitoUser.authenticateUser(authenticationDetails, {
-        onSuccess: function (result) {
-          console.log("Success!");
-          var accessToken = result.getAccessToken().getJwtToken();
-          console.log("Access Token:", accessToken);
-          /* Use the idToken for Logins Map when Federating User Pools with identity pools or when passing through an Authorization Header to an API Gateway Authorizer*/
-          var idToken = result.idToken.jwtToken;
-          console.log("Id Token:", idToken);
-          // $("#token").text(`Token: ${accessToken}`);
-          // localStorage.setItem("token", accessToken);
-          var decodedIdToken = parseJwt(accessToken);
-          console.log("Decoded Id Token:", decodedIdToken);
-          if (decodedIdToken["cognito:groups"] && decodedIdToken["cognito:groups"].includes("Administrators")) {
-            if ($("#rememberMe").prop("checked")) {
-              // Remember device
-              cognitoUser.setDeviceStatusRemembered({
-                onSuccess: function (result) {
-                  console.log('call result: ' + result);
-                },
-                onFailure: function (err) {
-                  console.error(err);
-                  //TODO Always returns "Network Error"??
-                  //alert(err.message);
-                }
-              });
-            } else {
-              // Do not remember device
-              cognitoUser.setDeviceStatusNotRemembered({
-                onSuccess: function (result) {
-                  console.log('call result: ' + result);
-                },
-                onFailure: function (err) {
-                  console.error(err);
-                  //alert(err.message);
-                }
-              });
-            }
-            $(location).attr("href", "index.html");
-          } else {
-            showError("You are not authorized to use this service");
-            return;
-          }
-        },
-        onFailure: function (err) {
-          console.log(err);
-          showError(err.message);
-        },
-
-      });
+          localStorage.setItem("accessToken", JSON.stringify(data.accessToken));
+          localStorage.setItem("clockDrift", data.clockDrift);
+          localStorage.setItem("idToken", JSON.stringify(data.idToken));
+          localStorage.setItem("refreshToken", JSON.stringify(data.refreshToken));
+          $(location).attr("href", "index.html");
+        })
+        .fail((jqXHR, textStatus, errorThrown) => {
+          console.error("jqXHR:", jqXHR);
+          console.error("Text Status:", textStatus);
+          console.error("Error Thrown:", errorThrown);
+          showError(textStatus);
+        });
     });
 
     function showError(message) {
       $("#error").html(message);
       $("#error").show();
     }
+
     function clearError() {
       $("#error").hide();
     }
-
-    // $("#loginform").submit(event => {
-    //   event.preventDefault();
-    //   $.ajax({
-    //     method: "POST",
-    //     url: `${apiBasePath}/oauth/login`,
-    //     contentType: "application/json",
-    //     dataType: "json",
-    //     cache: false,
-    //     data: JSON.stringify({
-    //       email: $("#email").val(),
-    //       password: $("#password").val()
-    //     })
-    //   })
-    //     .done((data, textStatus, jqXHR) => {
-    //       console.log("Text Status:", textStatus);
-    //       console.log("Data:", data);
-    //       console.log("jqXHR:", jqXHR);
-    //       console.log("Token:", data.token);
-    //       $("#token").text(`Token: ${data.token}`);
-    //       localStorage.setItem("token", data.token);
-    //       console.log("Decoded:", parseJwt(data.token));
-    //       $(location).attr("href", "index.html");
-    //     })
-    //     .fail((jqXHR, textStatus, errorThrown) => {
-    //       console.error("jqXHR:", jqXHR);
-    //       console.error("Text Status:", textStatus);
-    //       console.error("Error Thrown:", errorThrown);
-    //     });
-    // });
 
     $("#to-recover").on("click", function () {
       $("#loginform").slideUp();
@@ -297,18 +229,6 @@
       });
     });
 
-    function parseJwt(token) {
-      var base64Url = token.split(".")[1];
-      var base64 = decodeURIComponent(
-        atob(base64Url)
-          .split("")
-          .map(function (c) {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
-      );
-      return JSON.parse(base64);
-    }
   </script>
 </body>
 

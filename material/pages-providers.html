@@ -403,13 +403,7 @@
             <li>
               <a class="waves-effect waves-dark" href="pages-categories.html"><i class="ti-list"></i><span class="hide-menu">Categories</span></a>
             </li>
-            <li>
-              <a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="ti-user"></i><span class="hide-menu">Identities</span></a>
-              <ul aria-expanded="false" class="collapse">
-                <li><a href="pages-users.html">Users</a></li>
-                <li><a href="pages-providers.html">Providers</a></li>
-                <li><a href="pages-businesses.html">Businesses</a></li>
-              </ul>
+            <li> <a class="waves-effect waves-dark" href="pages-providers.html"><i class="ti-user"></i><span>Users</span></a>
             </li>
             <li>
               <a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="ti-money"></i><span class="hide-menu">Quotes/Bids</span></a>
@@ -674,8 +668,8 @@
         <!-- Row -->
         <div class="row">
           <div class="col-12">
-            <h4 class="d-inline">All Providers</h4>
-            <p class="text-muted m-t-0">Click on a provider to edit it or on <b>Create New</b> to create a new one</p>
+            <h4 class="d-inline">All Users</h4>
+            <p class="text-muted m-t-0">Click on a user to edit it or on <b>Create New</b> to create a new one</p>
             <!-- Row -->
             <div class="row" id="cards"></div>
             <!-- Row -->
@@ -684,7 +678,7 @@
         <!-- End Row -->
         <!-- Edit Modal -->
         <div id="edit-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-          <div class="modal-dialog">
+          <div class="modal-dialog modal-lg">
             <div class="modal-content">
               <div class="modal-header">
                 <h4 class="modal-title" id="title"></h4>
@@ -693,72 +687,83 @@
               <div class="modal-body">
                 <form>
                   <div class="form-group">
-                    <label for="item-businessname" class="control-label">Business Name:</label>
+                    <label for="cognitoUsers" class="control-label">Cognito User</label>
+                    <select id="cognitoUsers" class="selectpicker" data-style="form-control btn-secondary">
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="userType" class="control-label">Type</label>
+                    <select id="userType" class="selectpicker" data-style="form-control btn-secondary">
+                      <option value="user" active>User</option>
+                      <option value="provider">Provider</option>
+                      <option value="reviewer">Reviewer</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="item-businessname" class="control-label">Business Name</label>
                     <input type="text" class="form-control" id="item-businessname" />
                   </div>
                   <div class="form-group">
-                    <label for="item-description" class="control-label">Description:</label>
+                    <label for="item-description" class="control-label">Description</label>
                     <textarea class="form-control" id="item-description"></textarea>
                   </div>
-                  <div class="form-group">
-                    <label for="item-firstname" class="control-label">First Name:</label>
-                    <input type="text" class="form-control" id="item-firstname" />
+                  <div class="row">
+                    <div class="form-group col-md-6">
+                      <label for="item-firstname" class="control-label">First Name</label>
+                      <input type="text" class="form-control" id="item-firstname" />
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label for="item-lastname" class="control-label">Last Name</label>
+                      <input type="text" class="form-control" id="item-lastname" />
+                    </div>
                   </div>
                   <div class="form-group">
-                    <label for="item-middlename" class="control-label">Middle Name (optional):</label>
-                    <input type="text" class="form-control" id="item-middlename" />
-                  </div>
-                  <div class="form-group">
-                    <label for="item-lastname" class="control-label">Last Name:</label>
-                    <input type="text" class="form-control" id="item-lastname" />
-                  </div>
-                  <div class="form-group">
-                    <label for="item-email" class="control-label">Email:</label>
+                    <label for="item-email" class="control-label">Email</label>
                     <input type="email" class="form-control" id="item-email" />
                   </div>
                   <div class="form-group">
-                    <label for="item-address" class="control-label">Address:</label>
+                    <label for="item-address" class="control-label">Address</label>
                     <input type="text" class="form-control" id="item-address" />
                   </div>
-                  <div class="form-group">
-                    <label for="item-city" class="control-label">City:</label>
-                    <input type="text" class="form-control" id="item-city" />
+                  <div class="row">
+                    <div class="form-group col-md-6">
+                      <label for="item-city" class="control-label">City</label>
+                      <input type="text" class="form-control" id="item-city" />
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label for="item-postalcode" class="control-label">Postal Code</label>
+                      <input type="text" class="form-control" id="item-postalcode" />
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-group col-md-6">
+                      <label for="item-country" class="control-label">Country</label>
+                      <input type="text" class="form-control" id="item-country" />
+                    </div>
+                    <div class="form-group col-md-6">
+                      <label for="item-phone" class="control-label">Phone Number</label>
+                      <input type="text" class="form-control" id="item-phone" />
+                    </div>
                   </div>
                   <div class="form-group">
-                    <label for="item-state" class="control-label">State (optional):</label>
-                    <input type="text" class="form-control" id="item-state" />
-                  </div>
-                  <div class="form-group">
-                    <label for="item-postalcode" class="control-label">Postal Code:</label>
-                    <input type="text" class="form-control" id="item-postalcode" />
-                  </div>
-                  <div class="form-group">
-                    <label for="item-country" class="control-label">Country:</label>
-                    <input type="text" class="form-control" id="item-country" />
-                  </div>
-                  <div class="form-group">
-                    <label for="item-phone" class="control-label">Phone Number:</label>
-                    <input type="text" class="form-control" id="item-phone" />
-                  </div>
-                  <div class="form-group">
-                    <label for="item-profilepic" class="control-label">Profile Picture:</label>
+                    <label for="item-profilepic" class="control-label">Profile Picture</label>
                     <input type="text" class="form-control" id="item-profilepic" />
                   </div>
                   <div class="form-group">
-                    <label for="item-categoriesprovided" class="control-label">Categories Provided:</label>
+                    <label for="item-categoriesprovided" class="control-label">Categories Provided</label>
                     <select id="item-categoriesprovided" class="selectpicker" multiple data-style="form-control btn-default">
                     </select>
                   </div>
                   <div class="form-group">
-                    <label disabled for="item-identityproofs" class="control-label">Identity Proofs (not yet implemented):</label>
+                    <label disabled for="item-identityproofs" class="control-label">Identity Proofs (not yet implemented)</label>
                     <input disabled type="text" class="form-control" id="item-identityproofs" />
                   </div>
                   <div class="form-group">
-                    <label disabled for="item-certificates" class="control-label">Certificates (not yet implemented):</label>
+                    <label disabled for="item-certificates" class="control-label">Certificates (not yet implemented)</label>
                     <input disabled type="text" class="form-control" id="item-certificates" />
                   </div>
                   <div class="form-group">
-                    <label disabled for="item-workphotoalbums" class="control-label">Work Photo Albums (not yet implemented):</label>
+                    <label disabled for="item-workphotoalbums" class="control-label">Work Photo Albums (not yet implemented)</label>
                     <input disabled type="text" class="form-control" id="item-workphotoalbums" />
                   </div>
                   <div class="custom-control custom-switch">
@@ -880,74 +885,120 @@
   <script src="../assets/node_modules/bootstrap-select/bootstrap-select.min.js" type="text/javascript"></script>
   <!--Custom JavaScript -->
   <script src="dist/js/custom.min.js"></script>
+  <!--Lodash-->
+  <script src="dist/js/lodash.js"></script>
   <!--AWS-->
   <script src="dist/js/amazon-cognito-identity.min.js"></script>
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.487.0.min.js"></script>
   <script src="dist/js/auth.js"></script>
   <!-- This page's Javascript -->
   <script>
 
-    //TODO: Get list of all cognito users to match userId for this provider
-
-    function loadCards() {
+    async function loadCards() {
       $("#cards").empty();
 
-      // Get providers
-      $.ajax({
+      // Get servee users
+      await $.ajax({
         method: "GET",
-        url: `${usersApiBasePath}/users?isProvider=true`,
+        url: `${usersApiBasePath}/users`,
+        beforeSend: (jqXHR, settings) => {
+          jqXHR.setRequestHeader("Authorization", `Bearer ${JSON.parse(localStorage.getItem('idToken')).jwtToken}`);
+        },
         dataType: "json"
       })
         .done((data, textStatus, jqXHR) => {
-          console.log("Text Status:", textStatus);
-          console.log("Data:", data);
-          console.log("jqXHR:", jqXHR);
-          for (const item of data) {
-            console.log("Create card for:", item);
-            $("#cards").append(createCard(item));
-          }
+          console.log("GET /users -> Text Status:", textStatus);
+          console.log("GET /users -> Data:", data);
+          console.log("GET /users -> jqXHR:", jqXHR);
+          users = data;
+          users.forEach(user => {
+            $("#cards").append(createCard(user));
+          });
         })
         .fail((jqXHR, textStatus, errorThrown) => {
-          console.error("jqXHR:", jqXHR);
-          console.error("Text Status:", textStatus);
-          console.error("Error Thrown:", errorThrown);
+          console.error("GET /users -> jqXHR:", jqXHR);
+          console.error("GET /users -> Text Status:", textStatus);
+          console.error("GET /users -> Error Thrown:", errorThrown);
+          if (jqXHR.status == 0) {
+            console.log("Status is 0. Trying to refresh token");
+            // The token probably expired. Get a new one
+            $.ajax({
+              method: "POST",
+              url: `${authApiBasePath}/refreshToken`,
+              beforeSend: (jqXHR, settings) => {
+                jqXHR.setRequestHeader("Authorization", `Bearer ${JSON.parse(localStorage.getItem('idToken')).jwtToken}`);
+              },
+              data: JSON.stringify({
+                refreshToken: JSON.parse(localStorage.getItem('refreshToken')),
+                idToken: JSON.parse(localStorage.getItem('idToken')),
+                accessToken: JSON.parse(localStorage.getItem('accessToken'))
+              }),
+              dataType: "json"
+            })
+              .done((data, textStatus, jqXHR) => {
+                console.log("GET /auth/refreshToken -> Text Status:", textStatus);
+                console.log("GET /auth/refreshToken -> Data:", data);
+                console.log("GET /auth/refreshToken -> jqXHR:", jqXHR);
+
+                //TODO update jwtToken(s)
+                console.log("Current idToken:", JSON.parse(localStorage.getItem('idToken')));
+                updateTokens(data);
+                console.log("New idToken:", JSON.parse(localStorage.getItem('idToken')));
+
+                // Try again
+                //loadCards();
+              })
+              .fail((jqXHR, textStatus, errorThrown) => {
+                console.error("GET /auth/refreshToken -> jqXHR:", jqXHR);
+                console.error("GET /auth/refreshToken -> Text Status:", textStatus);
+                console.error("GET /auth/refreshToken -> Error Thrown:", errorThrown);
+              });
+          }
         });
     }
 
-    function createCard(item) {
-      var columnDiv = $("<div/>", { class: "col-lg-2 col-md-4", id: item.id });
+    function createCard(user) {
+
+      // Get user details
+      var columnDiv = $("<div/>", { class: "col-lg-2 col-md-4", id: user.id });
 
       var cardDiv = $("<div/>", { class: "card" }).appendTo(columnDiv);
 
       var headerContainer = $("<div/>", { class: "profile-header-container" }).appendTo(cardDiv);
-      var headerImg = $("<img/>", { class: "img-circle", src: item.profilepic || "../assets/images/img_avatar_male.png", alt: item.name, width: 120, height: 120 }).appendTo(headerContainer);
+      var headerImg = $("<img/>", { class: "img-circle", src: user.profilepic || "../assets/images/img_avatar_male.png", alt: user.name, width: 120, height: 120 }).appendTo(headerContainer);
 
       var bodyCardDiv = $("<div/>", { class: "card-body " }).appendTo(cardDiv);
+      console.log("User Attributes:", user.Attributes);
       $("<h4/>", { class: "card-title" })
-        .text(`${item.businessName}`)
+        .text(`${user.Attributes ? user.Attributes.find(o => o.Name == "given_name").Value : null} ${user.Attributes ? user.Attributes.find(o => o.Name == "family_name").Value : null}`)
         .appendTo(bodyCardDiv);
       $("<small/>", { class: "card-text text-muted" })
-        .text(`${item.id}`)
+        .text(`${user.businessName ? user.businessName : ""}`)
         .appendTo(bodyCardDiv);
 
-      var buttonsDiv = $("<div/>").appendTo(bodyCardDiv);
+      var buttonsDiv = $("<div/>", { class: "m-t-20" }).appendTo(bodyCardDiv);
       var editButton = $("<button/>", { class: "btn btn-sm btn-primary", "data-toggle": "modal", "data-target": "#edit-modal" })
         .text("Edit")
         .appendTo(buttonsDiv);
       editButton.on("click", () => {
-        $("#edit-modal #title").html(`${item.businessName || ""}`);
-        $("#edit-modal #item-businessname").val(item.businessName);
-        $("#edit-modal #item-description").val(item.description);
-        // $("#edit-modal #item-firstname").val(item.firstName);
-        // $("#edit-modal #item-middlename").val(item.middleName);
-        // $("#edit-modal #item-lastname").val(item.lastName);
-        // $("#edit-modal #item-email").val(item.email);
-        $("#edit-modal #item-address").val(item.address);
-        $("#edit-modal #item-city").val(item.city);
-        $("#edit-modal #item-state").val(item.state);
-        $("#edit-modal #item-postalcode").val(item.postalCode);
-        $("#edit-modal #item-country").val(item.country);
-        $("#edit-modal #item-phone").val(item.phone);
-        $("#edit-modal #item-profilepic").val(item.profilePic);
+        console.log("Editing:", user.isProvider ? "provider" : user.isReviewer ? "reviewer" : "user");
+        $("#edit-modal #title").html(`${user.businessName || ""}`);
+        $("#edit-modal #cognitoUsers").val(user.cognitoId);
+        $("#edit-modal #cognitoUsers").selectpicker("refresh");
+        $("#edit-modal #userType").val(user.isProvider ? "provider" : user.isReviewer ? "reviewer" : "user");
+        $("#edit-modal #userType").selectpicker("refresh");
+        $("#edit-modal #item-businessname").val(user.businessName);
+        $("#edit-modal #item-description").val(user.description);
+        $("#edit-modal #item-firstname").val(user.Attributes ? user.Attributes.find(o => o.Name == "given_name").Value : "");
+        $("#edit-modal #item-lastname").val(user.Attributes ? user.Attributes.find(o => o.Name == "family_name").Value : "");
+        $("#edit-modal #item-email").val(user.Attributes ? user.Attributes.find(o => o.Name == "email").Value : "");
+        $("#edit-modal #item-address").val(user.address);
+        $("#edit-modal #item-city").val(user.city);
+        $("#edit-modal #item-state").val(user.state);
+        $("#edit-modal #item-postalcode").val(user.postalCode);
+        $("#edit-modal #item-country").val(user.country);
+        $("#edit-modal #item-phone").val(user.phone);
+        $("#edit-modal #item-profilepic").val(user.profilePic);
         // Load all categories
         $("#edit-modal #item-categoriesprovided").empty();
         $("#item-categoriesprovided").selectpicker("refresh");
@@ -955,83 +1006,124 @@
           method: "GET",
           url: `${categoriesApiBasePath}/categories`,
           dataType: "json",
-          beforeSend: (jqXHR, settings) => {
-            jqXHR.setRequestHeader("Authorization", `Bearer ${accessToken}`);
-          }
         })
           .done((data, textStatus, jqXHR) => {
-            console.log("Text Status:", textStatus);
-            console.log("Data:", data);
-            console.log("jqXHR:", jqXHR);
+            console.log("GET /categories -> Text Status:", textStatus);
+            console.log("GET /categories -> Data:", data);
+            console.log("GET /categories -> jqXHR:", jqXHR);
             for (const category of data) {
               $("#item-categoriesprovided").append($("<option/>", { text: category.name, value: category.id }));
             }
             $("#item-categoriesprovided").selectpicker("refresh");
 
             // Select categories provided by provider
-            if (item.categoriesProvided) {
-              console.log("Provider has categories provided:", item.categoriesProvided);
-              $("#item-categoriesprovided").selectpicker("val", item.categoriesProvided);
+            if (user.categoriesProvided) {
+              console.log("Provider has categories provided:", user.categoriesProvided);
+              $("#item-categoriesprovided").selectpicker("val", user.categoriesProvided);
             }
           })
           .fail((jqXHR, textStatus, errorThrown) => {
-            console.error("jqXHR:", jqXHR);
-            console.error("Text Status:", textStatus);
-            console.error("Error Thrown:", errorThrown);
+            console.error("GET /categories -> jqXHR:", jqXHR);
+            console.error("GET /categories -> Text Status:", textStatus);
+            console.error("GET /categories -> Error Thrown:", errorThrown);
           });
-        $("#edit-modal #isActive").prop("checked", item.isActive);
-        $("#edit-modal #isAdmin").prop("checked", item.isAdmin);
+        $("#edit-modal #isActive").prop("checked", user.isActive);
+        $("#edit-modal #isAdmin").prop("checked", user.isAdmin);
         $("#edit-modal #save").text("Save");
         $("#edit-modal #save")
           .unbind()
           .click(function () {
-            console.log("Saving provider...");
-            $.ajax({
-              url: `${usersApiBasePath}/users/${item.id}`,
-              dataType: "json",
-              method: "PUT",
-              contentType: "application/json",
-              beforeSend: (jqXHR, settings) => {
-                jqXHR.setRequestHeader("Authorization", `Bearer ${accessToken}`);
-              },
-              data: JSON.stringify({
-                businessName: $("#edit-modal #item-businessname").val(),
+
+            console.log("Saving cognito user...");
+            var params = {
+              Username: user.Username,
+              UserPoolId: 'eu-central-1_7iruUqdsk',
+              UserAttributes: [
+                {
+                  Name: 'given_name',
+                  Value: $("#edit-modal #item-firstname").val()
+                },
+                {
+                  Name: 'family_name',
+                  Value: $("#edit-modal #item-lastname").val()
+                },
+                {
+                  Name: 'email',
+                  Value: $("#edit-modal #item-email").val()
+                },
+              ]
+            };
+            cognitoIdentityServiceProvider.adminUpdateUserAttributes(params, function (err, data) {
+              if (err) {
+                console.error(err, err.stack); // an error occurred
+                alert(err.message);
+                return;
+              }
+
+              // Cognito user was saved. Now save servee user...
+              var data = {
+                cognitoId: $("#edit-modal #cognitoUsers").val(),
+                isProvider: $("#edit-modal #userType").val() == "provider",
+                isReviewer: $("#edit-modal #userType").val() == "reviewer",
                 description: $("#edit-modal #item-description").val(),
-                firstName: $("#edit-modal #item-firstname").val(),
-                middleName: $("#edit-modal #item-middlename").val(),
-                lastName: $("#edit-modal #item-lastname").val(),
-                email: $("#edit-modal #item-email").val(),
                 address: $("#edit-modal #item-address").val(),
                 city: $("#edit-modal #item-city").val(),
-                state: $("#edit-modal #item-state").val(),
                 postalCode: $("#edit-modal #item-postalcode").val(),
                 country: $("#edit-modal #item-country").val(),
                 phone: $("#edit-modal #item-phone").val(),
-                profilePic: $("#edit-modal #item-profilepic").val(),
-                categoriesProvided: $("#edit-modal #item-categoriesprovided").val() || [],
-                identityProofs: [],
-                certificates: [],
-                workPhotoAlbums: [],
                 isActive: $("#edit-modal #isActive").prop("checked")
+              };
+
+              if ($("#edit-modal #item-businessname").val()) {
+                data.businessName = $("#edit-modal #item-businessname").val();
+              }
+
+              if ($("#edit-modal #item-state").val()) {
+                data.state = $("#edit-modal #item-state").val();
+              }
+
+              if ($("#edit-modal #item-profilepic").val()) {
+                data.profilePic = $("#edit-modal #item-profilepic").val();
+              }
+
+              // Lambda does not accept empty array values
+              if ($("#edit-modal #item-categoriesprovided").val().length > 0) {
+                data.categoriesProvided = $("#edit-modal #item-categoriesprovided").val();
+              }
+              // identityProofs: [],
+              // certificates: [],
+              // workPhotoAlbums: [],
+
+              console.log("Saving servee user...", JSON.stringify(data));
+
+              $.ajax({
+                url: `${usersApiBasePath}/users/${user.id}`,
+                dataType: "json",
+                method: "PUT",
+                contentType: "application/json",
+                beforeSend: (jqXHR, settings) => {
+                  jqXHR.setRequestHeader("Authorization", `Bearer ${accessToken}`);
+                },
+                data: JSON.stringify(data)
               })
-            })
-              .done((data, textStatus, jqXHR) => {
-                if (jqXHR.status == 200) {
-                  console.log(`Provider ${data.id} saved`);
-                  //publishMessage("Web", "orgUpdated", "Organization " + data.id + " saved");
-                  $("#edit-modal").modal("toggle");
-                  //showMessage(`'${data.name}' saved`);
-                  loadCards();
-                  return;
-                } else {
-                  console.error(jqXHR);
-                }
-              })
-              .fail((jqXHR, textStatus, errorThrown) => {
-                console.error("jqXHR:", jqXHR);
-                console.error("Text Status:", textStatus);
-                console.error("Error Thrown:", errorThrown);
-              });
+                .done((data, textStatus, jqXHR) => {
+                  if (jqXHR.status == 200) {
+                    console.log(`User ${data.id} saved`);
+                    //publishMessage("Web", "orgUpdated", "Organization " + data.id + " saved");
+                    $("#edit-modal").modal("toggle");
+                    //showMessage(`'${data.name}' saved`);
+                    loadCards();
+                    return;
+                  } else {
+                    console.error(jqXHR);
+                  }
+                })
+                .fail((jqXHR, textStatus, errorThrown) => {
+                  console.error("jqXHR:", jqXHR);
+                  console.error("Text Status:", textStatus);
+                  console.error("Error Thrown:", errorThrown);
+                });
+            });
           });
       });
 
@@ -1057,7 +1149,7 @@
             console.log("Deleting... access token:", accessToken);
             $.ajax({
               method: "DELETE",
-              url: `${usersApiBasePath}/users/${item.id}`,
+              url: `${usersApiBasePath}/users/${user.id}`,
               dataType: "json",
               beforeSend: (jqXHR, settings) => {
                 jqXHR.setRequestHeader("Authorization", `Bearer ${accessToken}`);
@@ -1100,18 +1192,18 @@
         dataType: "json"
       })
         .done((data, textStatus, jqXHR) => {
-          console.log("Text Status:", textStatus);
-          console.log("Data:", data);
-          console.log("jqXHR:", jqXHR);
+          console.log("GET /categories -> Text Status:", textStatus);
+          console.log("GET /categories -> Data:", data);
+          console.log("GET /categories -> jqXHR:", jqXHR);
           for (const category of data) {
             $("#item-categoriesprovided").append($("<option/>", { text: category.name, value: category.id }));
           }
           $("#item-categoriesprovided").selectpicker("refresh");
         })
         .fail((jqXHR, textStatus, errorThrown) => {
-          console.error("jqXHR:", jqXHR);
-          console.error("Text Status:", textStatus);
-          console.error("Error Thrown:", errorThrown);
+          console.error("GET /categories -> jqXHR:", jqXHR);
+          console.error("GET /categories -> Text Status:", textStatus);
+          console.error("GET /categories -> Error Thrown:", errorThrown);
         });
 
       $("#edit-modal #isActive").prop("checked", true);
@@ -1120,27 +1212,40 @@
         .unbind()
         .click(function () {
           console.log("Creating provider...");
-          var newObject = {
-            businessName: $("#edit-modal #item-businessname").val(),
+          var data = {
+            cognitoId: $("#edit-modal #cognitoUsers").val(),
+            isProvider: $("#edit-modal #userType").val() == "provider",
+            isReviewer: $("#edit-modal #userType").val() == "reviewer",
             description: $("#edit-modal #item-description").val(),
-            firstName: $("#edit-modal #item-firstname").val(),
-            middleName: $("#edit-modal #item-middlename").val(),
-            lastName: $("#edit-modal #item-lastname").val(),
-            email: $("#edit-modal #item-email").val(),
             address: $("#edit-modal #item-address").val(),
             city: $("#edit-modal #item-city").val(),
-            state: $("#edit-modal #item-state").val(),
             postalCode: $("#edit-modal #item-postalcode").val(),
             country: $("#edit-modal #item-country").val(),
             phone: $("#edit-modal #item-phone").val(),
-            profilePic: $("#edit-modal #item-profilepic").val(),
-            categoriesProvided: $("#edit-modal #item-categoriesprovided").val() || [],
-            identityProofs: [],
-            certificates: [],
-            workPhotoAlbums: [],
             isActive: $("#edit-modal #isActive").prop("checked")
           };
-          console.log(newObject);
+
+          if ($("#edit-modal #item-businessname").val()) {
+            data.businessName = $("#edit-modal #item-businessname").val();
+          }
+
+          if ($("#edit-modal #item-state").val()) {
+            data.state = $("#edit-modal #item-state").val();
+          }
+
+          if ($("#edit-modal #item-profilepic").val()) {
+            data.profilePic = $("#edit-modal #item-profilepic").val();
+          }
+
+          // Lambda does not accept empty array values
+          if ($("#edit-modal #item-categoriesprovided").val().length > 0) {
+            data.categoriesProvided = $("#edit-modal #item-categoriesprovided").val();
+          }
+          // identityProofs: [],
+          // certificates: [],
+          // workPhotoAlbums: [],
+
+          console.log("New user:", data);
           $.ajax({
             url: `${usersApiBasePath}/users`,
             dataType: "json",
@@ -1149,12 +1254,12 @@
             beforeSend: (jqXHR, settings) => {
               jqXHR.setRequestHeader("Authorization", `Bearer ${accessToken}`);
             },
-            data: JSON.stringify(newObject)
+            data: JSON.stringify(data)
           })
             .done((data, textStatus, jqXHR) => {
               switch (jqXHR.status) {
-                case 201:
-                  console.log("Provider created");
+                case 200:
+                  console.log("User created");
                   //publishMessage("Web", "orgCreated", "Organization " + data.id + " created");
                   $("#edit-modal").modal("toggle");
                   //showMessage(`'${data.name}' created`);
