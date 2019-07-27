@@ -68,9 +68,9 @@
                 </div>
               </div>
             </div>
+            <div id="error" style="display:none" class="alert alert-danger text-center" role="alert">
+            </div>
             <div class="form-group text-center">
-              <div id="error" style="display:none" class="alert alert-danger" role="alert">
-              </div>
               <div class="col-xs-12 p-b-20">
                 <button class="btn btn-block btn-lg btn-info btn-rounded" type="submit">Log In</button>
               </div>
@@ -161,10 +161,7 @@
         })
       })
         .done((data, textStatus, jqXHR) => {
-          console.log("Text Status:", textStatus);
-          console.log("Data:", data);
-          console.log("jqXHR:", jqXHR);
-
+          logAjaxSuccess("GET /auth", data, textStatus, jqXHR);
           localStorage.setItem("accessToken", JSON.stringify(data.accessToken));
           localStorage.setItem("clockDrift", data.clockDrift);
           localStorage.setItem("idToken", JSON.stringify(data.idToken));
@@ -172,21 +169,10 @@
           $(location).attr("href", "index.html");
         })
         .fail((jqXHR, textStatus, errorThrown) => {
-          console.error("jqXHR:", jqXHR);
-          console.error("Text Status:", textStatus);
-          console.error("Error Thrown:", errorThrown);
+          logAjaxError("GET /auth", jqXHR, textStatus, errorThrown);
           showError(textStatus);
         });
     });
-
-    function showError(message) {
-      $("#error").html(message);
-      $("#error").show();
-    }
-
-    function clearError() {
-      $("#error").hide();
-    }
 
     $("#to-recover").on("click", function () {
       $("#loginform").slideUp();
