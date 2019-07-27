@@ -55,6 +55,21 @@ function updateTokens(data) {
     var accessToken = localStorage.getItem("accessToken");
     accessToken.jwtToken = data.accessToken;
     localStorage.setItem("accessToken", JSON.stringify(accessToken));
+
+    // Update var
+    accessJwtToken = JSON.parse(localStorage.getItem('idToken')).jwtToken;
+}
+
+function logAjaxSuccess(apiFunction, data, textStatus, jqXHR) {
+    console.log(`${apiFunction} -> Data:`, data);
+    console.log(`${apiFunction} -> Text Status: ${textStatus}`);
+    console.log(`${apiFunction} -> jqXHR: ${jqXHR}`);
+}
+
+function logAjaxError(apiFunction, jqXHR, textStatus, errorThrown) {
+    console.error(`${apiFunction} -> jqXHR:`, jqXHR);
+    console.error(`${apiFunction} -> Text Status: ${textStatus}`);
+    console.error(`${apiFunction} -> Error Thrown: ${errorThrown}`);
 }
 
 $("#logout").on("click", () => {

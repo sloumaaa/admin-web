@@ -894,6 +894,8 @@
   <!-- This page's Javascript -->
   <script>
 
+    var accessJwtToken = JSON.parse(localStorage.getItem('idToken')).jwtToken;
+
     async function loadCards() {
       $("#cards").empty();
 
@@ -902,23 +904,21 @@
         method: "GET",
         url: `${usersApiBasePath}/users`,
         beforeSend: (jqXHR, settings) => {
-          jqXHR.setRequestHeader("Authorization", `Bearer ${JSON.parse(localStorage.getItem('idToken')).jwtToken}`);
+          jqXHR.setRequestHeader("Authorization", `Bearer ${accessJwtToken}`);
         },
         dataType: "json"
       })
         .done((data, textStatus, jqXHR) => {
-          console.log("GET /users -> Text Status:", textStatus);
-          console.log("GET /users -> Data:", data);
-          console.log("GET /users -> jqXHR:", jqXHR);
+          logAjaxSuccess("GET /users", data, textStatus, jqXHR);
+
           users = data;
           users.forEach(user => {
             $("#cards").append(createCard(user));
           });
+
         })
         .fail((jqXHR, textStatus, errorThrown) => {
-          console.error("GET /users -> jqXHR:", jqXHR);
-          console.error("GET /users -> Text Status:", textStatus);
-          console.error("GET /users -> Error Thrown:", errorThrown);
+          logAjaxError("GET /users", jqXHR, textStatus, errorThrown);
           if (jqXHR.status == 0) {
             console.log("Status is 0. Trying to refresh token");
             // The token probably expired. Get a new one
@@ -926,7 +926,7 @@
               method: "POST",
               url: `${authApiBasePath}/refreshToken`,
               beforeSend: (jqXHR, settings) => {
-                jqXHR.setRequestHeader("Authorization", `Bearer ${JSON.parse(localStorage.getItem('idToken')).jwtToken}`);
+                jqXHR.setRequestHeader("Authorization", `Bearer ${accessJwtToken}`);
               },
               data: JSON.stringify({
                 refreshToken: JSON.parse(localStorage.getItem('refreshToken')),
@@ -936,22 +936,12 @@
               dataType: "json"
             })
               .done((data, textStatus, jqXHR) => {
-                console.log("GET /auth/refreshToken -> Text Status:", textStatus);
-                console.log("GET /auth/refreshToken -> Data:", data);
-                console.log("GET /auth/refreshToken -> jqXHR:", jqXHR);
-
-                //TODO update jwtToken(s)
-                console.log("Current idToken:", JSON.parse(localStorage.getItem('idToken')));
+                logAjaxSuccess("POST /auth/refreshToken", data, textStatus, jqXHR);
                 updateTokens(data);
-                console.log("New idToken:", JSON.parse(localStorage.getItem('idToken')));
-
-                // Try again
-                //loadCards();
+                loadCards();
               })
               .fail((jqXHR, textStatus, errorThrown) => {
-                console.error("GET /auth/refreshToken -> jqXHR:", jqXHR);
-                console.error("GET /auth/refreshToken -> Text Status:", textStatus);
-                console.error("GET /auth/refreshToken -> Error Thrown:", errorThrown);
+                logAjaxError("POST /auth/refreshToken", jqXHR, textStatus, errorThrown);
               });
           }
         });
@@ -1008,9 +998,7 @@
           dataType: "json",
         })
           .done((data, textStatus, jqXHR) => {
-            console.log("GET /categories -> Text Status:", textStatus);
-            console.log("GET /categories -> Data:", data);
-            console.log("GET /categories -> jqXHR:", jqXHR);
+            logAjaxSuccess(`GET /categories`, data, textStatus, jqXHR);
             for (const category of data) {
               $("#item-categoriesprovided").append($("<option/>", { text: category.name, value: category.id }));
             }
@@ -1023,9 +1011,7 @@
             }
           })
           .fail((jqXHR, textStatus, errorThrown) => {
-            console.error("GET /categories -> jqXHR:", jqXHR);
-            console.error("GET /categories -> Text Status:", textStatus);
-            console.error("GET /categories -> Error Thrown:", errorThrown);
+            logAjaxError("GET /categories", jqXHR, textStatus, errorThrown);
           });
         $("#edit-modal #isActive").prop("checked", user.isActive);
         $("#edit-modal #isAdmin").prop("checked", user.isAdmin);
@@ -1107,11 +1093,11 @@
                 data: JSON.stringify(data)
               })
                 .done((data, textStatus, jqXHR) => {
+                  logAjaxSuccess(`PUT /users/${user.id}`, data, textStatus, jqXHR);
                   if (jqXHR.status == 200) {
                     console.log(`User ${data.id} saved`);
-                    //publishMessage("Web", "orgUpdated", "Organization " + data.id + " saved");
                     $("#edit-modal").modal("toggle");
-                    //showMessage(`'${data.name}' saved`);
+                    showMessage(`'${data.firstName}' saved`);
                     loadCards();
                     return;
                   } else {
@@ -1119,9 +1105,7 @@
                   }
                 })
                 .fail((jqXHR, textStatus, errorThrown) => {
-                  console.error("jqXHR:", jqXHR);
-                  console.error("Text Status:", textStatus);
-                  console.error("Error Thrown:", errorThrown);
+                  logAjaxError(`PUT /users/${user.id}`, jqXHR, textStatus, errorThrown);
                 });
             });
           });
@@ -1156,12 +1140,11 @@
               }
             })
               .done((data, textStatus, jqXHR) => {
+                logAjaxSuccess(`DELETE /users/${user.id}`, data, textStatus, jqXHR);
                 loadCards();
               })
               .fail((jqXHR, textStatus, errorThrown) => {
-                console.error("jqXHR:", jqXHR);
-                console.error("Text Status:", textStatus);
-                console.error("Error Thrown:", errorThrown);
+                logAjaxError(`DELETE /users/${userId}`, jqXHR, textStatus, errorThrown);
               });
           }
         });
@@ -1192,18 +1175,14 @@
         dataType: "json"
       })
         .done((data, textStatus, jqXHR) => {
-          console.log("GET /categories -> Text Status:", textStatus);
-          console.log("GET /categories -> Data:", data);
-          console.log("GET /categories -> jqXHR:", jqXHR);
+          logAjaxSuccess(`GET /categories`, data, textStatus, jqXHR);
           for (const category of data) {
             $("#item-categoriesprovided").append($("<option/>", { text: category.name, value: category.id }));
           }
           $("#item-categoriesprovided").selectpicker("refresh");
         })
         .fail((jqXHR, textStatus, errorThrown) => {
-          console.error("GET /categories -> jqXHR:", jqXHR);
-          console.error("GET /categories -> Text Status:", textStatus);
-          console.error("GET /categories -> Error Thrown:", errorThrown);
+          logAjaxError(`GET /categories`, jqXHR, textStatus, errorThrown);
         });
 
       $("#edit-modal #isActive").prop("checked", true);
@@ -1257,6 +1236,7 @@
             data: JSON.stringify(data)
           })
             .done((data, textStatus, jqXHR) => {
+              logAjaxSuccess(`POST /users`, data, textStatus, jqXHR);
               switch (jqXHR.status) {
                 case 200:
                   console.log("User created");
@@ -1270,9 +1250,7 @@
               }
             })
             .fail((jqXHR, textStatus, errorThrown) => {
-              console.error("jqXHR:", jqXHR);
-              console.error("Text Status:", textStatus);
-              console.error("Error Thrown:", errorThrown);
+              logAjaxError(`POST /users`, jqXHR, textStatus, errorThrown);
             });
         });
     }
