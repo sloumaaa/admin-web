@@ -1,6 +1,5 @@
-var cognitoUser = undefined;
-var currentSession = undefined;
-var accessToken = undefined;
+
+//#region Lambda
 
 const authApiBasePath = "https://ommkdunauc.execute-api.eu-central-1.amazonaws.com/dev";
 const categoriesApiBasePath = "https://g8335hfcy0.execute-api.eu-central-1.amazonaws.com/dev";
@@ -9,6 +8,15 @@ const providersApiBasePath = "https://sclx4kb3lk.execute-api.eu-central-1.amazon
 const reviewsApiBasePath = "https://2nhq1hidx6.execute-api.eu-central-1.amazonaws.com/dev";
 const quotesApiBasePath = "https://z75j3glj94.execute-api.eu-central-1.amazonaws.com/dev";
 const usersApiBasePath = "https://ommkdunauc.execute-api.eu-central-1.amazonaws.com/dev";
+
+//#endregion
+
+//#region Authentication
+
+var cognitoUser = undefined;
+var currentSession = undefined;
+var accessToken = undefined;
+var accessJwtToken = localStorage.getItem("idToken") ? JSON.parse(localStorage.getItem('idToken')).jwtToken : undefined;
 
 function isLoggedIn() {
 
@@ -41,7 +49,7 @@ function isLoggedIn() {
             console.error("jqXHR:", jqXHR);
             console.error("Text Status:", textStatus);
             console.error("Error Thrown:", errorThrown);
-            $(location).attr("href", "pages-login.html&message=" + encodeURI(testStatus));
+            $(location).attr("href", "pages-login.html?message=" + encodeURI(textStatus));
         });
 }
 
@@ -60,6 +68,16 @@ function updateTokens(data) {
     accessJwtToken = JSON.parse(localStorage.getItem('idToken')).jwtToken;
 }
 
+//#endregion
+
+//#region Cognito
+
+
+
+//#endregion
+
+//#region Logging/Message
+
 function logAjaxSuccess(apiFunction, data, textStatus, jqXHR) {
     console.log(`${apiFunction} -> Data:`, data);
     console.log(`${apiFunction} -> Text Status: ${textStatus}`);
@@ -72,6 +90,19 @@ function logAjaxError(apiFunction, jqXHR, textStatus, errorThrown) {
     console.error(`${apiFunction} -> Error Thrown: ${errorThrown}`);
 }
 
+function showError(message) {
+    $("#error").html(message);
+    $("#error").show();
+}
+
+function clearError() {
+    $("#error").hide();
+}
+
+//#endregion
+
+//#region Logout
+
 $("#logout").on("click", () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("idToken");
@@ -80,7 +111,4 @@ $("#logout").on("click", () => {
     $(location).attr("href", "pages-login.html");
 });
 
-function showError(message) {
-    $("#error").html(message);
-    $("#error").show();
-}
+//#endregion
