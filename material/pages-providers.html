@@ -898,6 +898,7 @@
       $("#cards").empty();
 
       // Get servee users
+      console.log("id token:", accessJwtToken)
       await $.ajax({
         method: "GET",
         url: `${usersApiBasePath}/users`,
@@ -969,11 +970,12 @@
         .text("Edit")
         .appendTo(buttonsDiv);
       editButton.on("click", () => {
-        console.log("Editing:", user.isProvider ? "provider" : user.isReviewer ? "reviewer" : "user");
+        console.log("Editing:", user.type);
+        console.log(user);
         $("#edit-modal #title").html(`${user.businessName || ""}`);
         $("#edit-modal #cognitoUsers").val(user.cognitoId);
         $("#edit-modal #cognitoUsers").selectpicker("refresh");
-        $("#edit-modal #userType").val(user.isProvider ? "provider" : user.isReviewer ? "reviewer" : "user");
+        $("#edit-modal #userType").val(user.type);
         $("#edit-modal #userType").selectpicker("refresh");
         $("#edit-modal #item-businessname").val(user.businessName);
         $("#edit-modal #item-description").val(user.description);
@@ -1018,6 +1020,9 @@
           .unbind()
           .click(function () {
 
+            //******
+            //TODO Move to lambda
+            //******
             console.log("Saving cognito user...");
             var params = {
               Username: user.Username,
@@ -1037,6 +1042,7 @@
                 },
               ]
             };
+
             cognitoIdentityServiceProvider.adminUpdateUserAttributes(params, function (err, data) {
               if (err) {
                 console.error(err, err.stack); // an error occurred
@@ -1047,8 +1053,7 @@
               // Cognito user was saved. Now save servee user...
               var data = {
                 cognitoId: $("#edit-modal #cognitoUsers").val(),
-                isProvider: $("#edit-modal #userType").val() == "provider",
-                isReviewer: $("#edit-modal #userType").val() == "reviewer",
+                type: $("#edit-modal #userType").val(),
                 description: $("#edit-modal #item-description").val(),
                 address: $("#edit-modal #item-address").val(),
                 city: $("#edit-modal #item-city").val(),
@@ -1086,7 +1091,7 @@
                 method: "PUT",
                 contentType: "application/json",
                 beforeSend: (jqXHR, settings) => {
-                  jqXHR.setRequestHeader("Authorization", `Bearer ${accessToken}`);
+                  jqXHR.setRequestHeader("Authorization", `Bearer ${accessJwtToken}`);
                 },
                 data: JSON.stringify(data)
               })
@@ -1095,7 +1100,7 @@
                   if (jqXHR.status == 200) {
                     console.log(`User ${data.id} saved`);
                     $("#edit-modal").modal("toggle");
-                    showMessage(`'${data.firstName}' saved`);
+                    //showMessage(`'${data.firstName}' saved`);
                     loadCards();
                     return;
                   } else {
@@ -1134,8 +1139,8 @@
               url: `${usersApiBasePath}/users/${user.id}`,
               dataType: "json",
               beforeSend: (jqXHR, settings) => {
-                jqXHR.setRequestHeader("Authorization", `Bearer ${accessToken}`);
-              }
+                jqXHR.setRequestHeader("Authorization", `Bearer ${accessJwtToken}`);
+              },
             })
               .done((data, textStatus, jqXHR) => {
                 logAjaxSuccess(`DELETE /users/${user.id}`, data, textStatus, jqXHR);
@@ -1153,7 +1158,31 @@
 
     function resetModal() {
       $("#edit-modal #title").html("New User");
+      // Get all cognito users
+      $.ajax({
+        method: "GET",
+        url: `${usersApiBasePath}/cognitoUsers`,
+        beforeSend: (jqXHR, settings) => {
+          jqXHR.setRequestHeader("Authorization", `Bearer ${accessJwtToken}`);
+        },
+        dataType: "json"
+      })
+        .done((data, textStatus, jqXHR) => {
+          logAjaxSuccess(`GET /cognitoUsers`, data, textStatus, jqXHR);
+          $("#edit-modal #cognitoUsers").empty();
+          // Add empty item
+          $("#edit-modal #cognitoUsers").append($("<option/>", {}));
+          $.each(data.Users, (index, cognitoUser) => {
+            let cognitoUserDisplay = cognitoUser.Attributes.find(o => o.Name == "given_name").Value + " " + cognitoUser.Attributes.find(o => o.Name == "family_name").Value + " (" + cognitoUser.Attributes.find(o => o.Name == "email").Value + ")";
+            $("#edit-modal #cognitoUsers").append($("<option/>", { text: cognitoUserDisplay, value: cognitoUser.Username }));
+          });
+          $("#edit-modal #cognitoUsers").selectpicker("refresh");
+        })
+        .fail((jqXHR, textStatus, errorThrown) => {
+          logAjaxError(`GET /cognitoUsers`, jqXHR, textStatus, errorThrown);
+        });
       $("#edit-modal #item-businessname").val("");
+      $("#edit-modal #cognitoUsers").val()
       $("#edit-modal #item-description").val("");
       $("#edit-modal #item-firstname").val("");
       $("#edit-modal #item-middlename").val("");
@@ -1188,11 +1217,10 @@
       $("#edit-modal #save")
         .unbind()
         .click(function () {
-          console.log("Creating provider...");
+          console.log("Creating user...");
           var data = {
             cognitoId: $("#edit-modal #cognitoUsers").val(),
-            isProvider: $("#edit-modal #userType").val() == "provider",
-            isReviewer: $("#edit-modal #userType").val() == "reviewer",
+            type: $("#edit-modal #userType").val(),
             description: $("#edit-modal #item-description").val(),
             address: $("#edit-modal #item-address").val(),
             city: $("#edit-modal #item-city").val(),
@@ -1229,7 +1257,7 @@
             method: "POST",
             contentType: "application/json",
             beforeSend: (jqXHR, settings) => {
-              jqXHR.setRequestHeader("Authorization", `Bearer ${accessToken}`);
+              jqXHR.setRequestHeader("Authorization", `Bearer ${accessJwtToken}`);
             },
             data: JSON.stringify(data)
           })
