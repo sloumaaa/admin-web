@@ -16,7 +16,7 @@ const usersApiBasePath = "https://ommkdunauc.execute-api.eu-central-1.amazonaws.
 var cognitoUser = undefined;
 var currentSession = undefined;
 var accessToken = undefined;
-var accessJwtToken = localStorage.getItem("idToken") ? JSON.parse(localStorage.getItem('idToken')).jwtToken : undefined;
+var accessJwtToken = localStorage.getItem("idToken") ? JSON.parse(localStorage.getItem("idToken")).jwtToken : undefined;
 
 function isLoggedIn() {
 
@@ -57,12 +57,12 @@ function updateTokens(data) {
     // Id token
     var idToken = localStorage.getItem("idToken");
     idToken.jwtToken = data.idToken;
-    localStorage.setItem("idToken", JSON.stringify(idToken));
+    localStorage.setItem("idToken", idToken);
 
     // Access token
     var accessToken = localStorage.getItem("accessToken");
     accessToken.jwtToken = data.accessToken;
-    localStorage.setItem("accessToken", JSON.stringify(accessToken));
+    localStorage.setItem("accessToken", accessToken);
 
     // Update var
     accessJwtToken = JSON.parse(localStorage.getItem('idToken')).jwtToken;
@@ -70,24 +70,20 @@ function updateTokens(data) {
 
 //#endregion
 
-//#region Cognito
-
-
-
 //#endregion
 
 //#region Logging/Message
 
 function logAjaxSuccess(apiFunction, data, textStatus, jqXHR) {
-    console.log(`${apiFunction} -> Data:`, data);
-    console.log(`${apiFunction} -> Text Status: ${textStatus}`);
-    console.log(`${apiFunction} -> jqXHR: ${jqXHR}`);
+    console.log(apiFunction + " -> Data:", data);
+    console.log(apiFunction + " -> Text Status:", textStatus);
+    console.log(apiFunction + " ->  jqXHR:", jqXHR);
 }
 
 function logAjaxError(apiFunction, jqXHR, textStatus, errorThrown) {
-    console.error(`${apiFunction} -> jqXHR:`, jqXHR);
-    console.error(`${apiFunction} -> Text Status: ${textStatus}`);
-    console.error(`${apiFunction} -> Error Thrown: ${errorThrown}`);
+    console.error(apiFunction + " -> jqXHR:", jqXHR);
+    console.error(apiFunction + " -> Text Status:", textStatus);
+    console.error(apiFunction + " -> Error Thrown:", errorThrown);
 }
 
 function showError(message) {
