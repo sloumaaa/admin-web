@@ -1,4 +1,3 @@
-
 //#region Lambda
 
 const authApiBasePath = "https://ommkdunauc.execute-api.eu-central-1.amazonaws.com/dev";
@@ -13,22 +12,64 @@ const usersApiBasePath = "https://ommkdunauc.execute-api.eu-central-1.amazonaws.
 
 //#region Authentication
 
-var cognitoUser = undefined;
-var currentSession = undefined;
-var accessToken = undefined;
-var accessJwtToken = localStorage.getItem("idToken") ? JSON.parse(localStorage.getItem("idToken")).jwtToken : undefined;
+function getBearerToken() {
+    let token = Cookies.getJSON("idToken") ? Cookies.getJSON("idToken").jwtToken : undefined;
+    if (!token) {
+        $(location).attr("href", "pages-login.html");
+        return;
+    }
+    return token;
+}
+
+//TODO NEED TO CONVERT TO LOCAL TIMEZONE?
+function setTokens(tokens) {
+    Cookies.set("accessToken", tokens.accessToken, { expires: new Date(tokens.accessToken.payload.exp * 1000) });
+    Cookies.set("clockDrift", tokens.clockDrift);
+    Cookies.set("idToken", tokens.idToken, { expires: new Date(tokens.idToken.payload.exp * 1000) });
+    Cookies.set("refreshToken", tokens.refreshToken);
+}
+
+function getIdToken() {
+    return Cookies.getJSON("idToken") || undefined;
+}
+
+function getAccessToken() {
+    return Cookies.getJSON("accessToken") || undefined;
+}
+
+function getRefreshToken() {
+    return Cookies.getJSON("refreshToken") || undefined;
+}
+
+async function login() {
+    return await $.ajax({
+        method: "POST",
+        url: `${authApiBasePath}/auth`,
+        contentType: "application/json",
+        dataType: "json",
+        cache: false,
+        data: JSON.stringify({
+            username: $("#email").val(),
+            password: $("#password").val()
+        })
+    })
+        .done((data, textStatus, jqXHR) => {
+            logAjaxSuccess("GET /auth", data, textStatus, jqXHR);
+            setTokens(data);
+            return true;
+        })
+        .fail((jqXHR, textStatus, errorThrown) => {
+            logAjaxError("GET /auth", jqXHR, textStatus, errorThrown);
+            showError(textStatus);
+        });
+}
 
 function isLoggedIn() {
 
     // Check if token is still valid
-    var token;
+    var token = getBearerToken();
 
-    try {
-        token = JSON.parse(localStorage.getItem("idToken")).jwtToken;
-    } catch (error) {
-        console.error(error);
-        $(location).attr("href", "pages-login.html");
-    }
+    console.log("Verifying token:", token);
     $.ajax({
         method: "POST",
         url: `${authApiBasePath}/verifyToken`,
@@ -53,24 +94,86 @@ function isLoggedIn() {
         });
 }
 
+//TODO SHOULD RETURN A PROMISE FOR USE IN GETSERVEEUSERS() AND WEB SITE
+async function refreshToken() {
+    await $.ajax({
+        method: "POST",
+        url: `${authApiBasePath}/refreshToken`,
+        beforeSend: getHeaders,
+        data: JSON.stringify({
+            refreshToken: getRefreshToken(),
+            idToken: getIdToken(),
+            accessToken: getAccessToken()
+        }),
+        dataType: "json"
+    })
+        .done((data, textStatus, jqXHR) => {
+            logAjaxSuccess("POST /auth/refreshToken", data, textStatus, jqXHR);
+            updateTokens(data);
+            loadCards();
+        })
+        .fail((jqXHR, textStatus, errorThrown) => {
+            logAjaxError("POST /auth/refreshToken", jqXHR, textStatus, errorThrown);
+            throw new Error(errorThrown);
+        });
+}
+
+//TODO Change to cookies
 function updateTokens(data) {
+
+    console.log("Updating tokens:", data);
+
     // Id token
-    var idToken = localStorage.getItem("idToken");
+    var idToken = Cookies.getJSON("idToken");
     idToken.jwtToken = data.idToken;
-    localStorage.setItem("idToken", idToken);
+    console.log("Setting new idToken:", idToken);
+    Cookies.set("idToken", idToken);
 
     // Access token
-    var accessToken = localStorage.getItem("accessToken");
+    var accessToken = Cookies.getJSON("accessToken");
     accessToken.jwtToken = data.accessToken;
-    localStorage.setItem("accessToken", accessToken);
+    Cookies.set("accessToken", accessToken);
+}
 
-    // Update var
-    accessJwtToken = JSON.parse(localStorage.getItem('idToken')).jwtToken;
+function getHeaders(jqXHR) {
+    jqXHR.setRequestHeader("Authorization", `Bearer ${getBearerToken()}`);
 }
 
 //#endregion
 
+//#region Users
+
+async function getUsers() {
+    return await $.ajax({
+        method: "GET",
+        url: `${usersApiBasePath}/users`,
+        beforeSend: getHeaders,
+        dataType: "json"
+    })
+        .done((data, textStatus, jqXHR) => {
+            logAjaxSuccess("GET /users", data, textStatus, jqXHR);
+            return data;
+        })
+        .fail((jqXHR, textStatus, errorThrown) => {
+            handleError(getUsers, jqXHR, textStatus, errorThrown);
+        });
+}
+
 //#endregion
+
+function handleError(functionCalled, jqXHR, textStatus, errorThrown) {
+    logAjaxError(functionCalled, jqXHR, textStatus, errorThrown);
+    if (jqXHR.status == 0) {
+        // The token probably expired. Get a new one
+        console.log("Status is 0. Trying to refresh token");
+        refreshToken().then((tokens) => {
+            updateTokens(tokens);
+            functionCalled();
+        }).catch((error) => {
+            throw new Error(`Failed to call ${functionCalled}:" ${error}`);
+        })
+    }
+}
 
 //#region Logging/Message
 
@@ -100,10 +203,10 @@ function clearError() {
 //#region Logout
 
 $("#logout").on("click", () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("idToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("clockDrift");
+    Cookies.remove("accessToken");
+    Cookies.remove("idToken");
+    Cookies.remove("refreshToken");
+    Cookies.remove("clockDrift");
     $(location).attr("href", "pages-login.html");
 });
 

@@ -130,6 +130,8 @@
   <!-- Bootstrap tether Core JavaScript -->
   <script src="../assets/node_modules/popper/popper.min.js"></script>
   <script src="../assets/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+  <!--Cookies-->
+  <script src="dist/js/js.cookie.js"></script>
   <!-- AWS -->
   <script src="./dist/js/amazon-cognito-identity.min.js"></script>
   <script src="https://sdk.amazonaws.com/js/aws-sdk-2.487.0.min.js"></script>
@@ -149,29 +151,9 @@
       event.preventDefault();
       clearError();
 
-      $.ajax({
-        method: "POST",
-        url: `${authApiBasePath}/auth`,
-        contentType: "application/json",
-        dataType: "json",
-        cache: false,
-        data: JSON.stringify({
-          username: $("#email").val(),
-          password: $("#password").val()
-        })
-      })
-        .done((data, textStatus, jqXHR) => {
-          logAjaxSuccess("GET /auth", data, textStatus, jqXHR);
-          localStorage.setItem("accessToken", JSON.stringify(data.accessToken));
-          localStorage.setItem("clockDrift", data.clockDrift);
-          localStorage.setItem("idToken", JSON.stringify(data.idToken));
-          localStorage.setItem("refreshToken", JSON.stringify(data.refreshToken));
-          $(location).attr("href", "index.html");
-        })
-        .fail((jqXHR, textStatus, errorThrown) => {
-          logAjaxError("GET /auth", jqXHR, textStatus, errorThrown);
-          showError(textStatus);
-        });
+      login().then(() => {
+        $(location).attr("href", "index.html");
+      });
     });
 
     $("#to-recover").on("click", function () {
@@ -184,6 +166,7 @@
       $("#loginform").slideToggle();
     });
 
+    //TODO MOVE TO AWS LAMBDA?
     $("#recoverPassword").on("click", (event) => {
       event.preventDefault();
 

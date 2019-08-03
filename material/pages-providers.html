@@ -887,6 +887,8 @@
   <script src="dist/js/custom.min.js"></script>
   <!--Lodash-->
   <script src="dist/js/lodash.js"></script>
+  <!--Cookies-->
+  <script src="dist/js/js.cookie.js"></script>
   <!--AWS-->
   <script src="dist/js/amazon-cognito-identity.min.js"></script>
   <script src="https://sdk.amazonaws.com/js/aws-sdk-2.487.0.min.js"></script>
@@ -897,53 +899,13 @@
     async function loadCards() {
       $("#cards").empty();
 
-      // Get servee users
-      console.log("id token:", accessJwtToken)
-      await $.ajax({
-        method: "GET",
-        url: `${usersApiBasePath}/users`,
-        beforeSend: (jqXHR, settings) => {
-          jqXHR.setRequestHeader("Authorization", `Bearer ${accessJwtToken}`);
-        },
-        dataType: "json"
-      })
-        .done((data, textStatus, jqXHR) => {
-          logAjaxSuccess("GET /users", data, textStatus, jqXHR);
-
-          users = data;
-          users.forEach(user => {
-            $("#cards").append(createCard(user));
-          });
-
-        })
-        .fail((jqXHR, textStatus, errorThrown) => {
-          logAjaxError("GET /users", jqXHR, textStatus, errorThrown);
-          if (jqXHR.status == 0) {
-            console.log("Status is 0. Trying to refresh token");
-            // The token probably expired. Get a new one
-            $.ajax({
-              method: "POST",
-              url: `${authApiBasePath}/refreshToken`,
-              beforeSend: (jqXHR, settings) => {
-                jqXHR.setRequestHeader("Authorization", `Bearer ${accessJwtToken}`);
-              },
-              data: JSON.stringify({
-                refreshToken: JSON.parse(localStorage.getItem('refreshToken')),
-                idToken: JSON.parse(localStorage.getItem('idToken')),
-                accessToken: JSON.parse(localStorage.getItem('accessToken'))
-              }),
-              dataType: "json"
-            })
-              .done((data, textStatus, jqXHR) => {
-                logAjaxSuccess("POST /auth/refreshToken", data, textStatus, jqXHR);
-                updateTokens(data);
-                loadCards();
-              })
-              .fail((jqXHR, textStatus, errorThrown) => {
-                logAjaxError("POST /auth/refreshToken", jqXHR, textStatus, errorThrown);
-              });
-          }
+      getUsers().then((users) => {
+        users.forEach(user => {
+          $("#cards").append(createCard(user));
         });
+      }).catch((error) => {
+        alert("Failed to retrieve users:", error);
+      });
     }
 
     function createCard(user) {
@@ -1019,98 +981,67 @@
         $("#edit-modal #save")
           .unbind()
           .click(function () {
-
-            //******
-            //TODO Move to lambda
-            //******
-            console.log("Saving cognito user...");
-            var params = {
-              Username: user.Username,
-              UserPoolId: 'eu-central-1_7iruUqdsk',
-              UserAttributes: [
-                {
-                  Name: 'given_name',
-                  Value: $("#edit-modal #item-firstname").val()
-                },
-                {
-                  Name: 'family_name',
-                  Value: $("#edit-modal #item-lastname").val()
-                },
-                {
-                  Name: 'email',
-                  Value: $("#edit-modal #item-email").val()
-                },
-              ]
+            console.log("Saving user...:", user.id);
+            var data = {
+              cognitoId: $("#edit-modal #cognitoUsers").val(),
+              type: $("#edit-modal #userType").val(),
+              description: $("#edit-modal #item-description").val(),
+              address: $("#edit-modal #item-address").val(),
+              city: $("#edit-modal #item-city").val(),
+              postalCode: $("#edit-modal #item-postalcode").val(),
+              country: $("#edit-modal #item-country").val(),
+              phone: $("#edit-modal #item-phone").val(),
+              isActive: $("#edit-modal #isActive").prop("checked")
             };
 
-            cognitoIdentityServiceProvider.adminUpdateUserAttributes(params, function (err, data) {
-              if (err) {
-                console.error(err, err.stack); // an error occurred
-                alert(err.message);
-                return;
-              }
+            if ($("#edit-modal #item-businessname").val()) {
+              data.businessName = $("#edit-modal #item-businessname").val();
+            }
 
-              // Cognito user was saved. Now save servee user...
-              var data = {
-                cognitoId: $("#edit-modal #cognitoUsers").val(),
-                type: $("#edit-modal #userType").val(),
-                description: $("#edit-modal #item-description").val(),
-                address: $("#edit-modal #item-address").val(),
-                city: $("#edit-modal #item-city").val(),
-                postalCode: $("#edit-modal #item-postalcode").val(),
-                country: $("#edit-modal #item-country").val(),
-                phone: $("#edit-modal #item-phone").val(),
-                isActive: $("#edit-modal #isActive").prop("checked")
-              };
+            if ($("#edit-modal #item-state").val()) {
+              data.state = $("#edit-modal #item-state").val();
+            }
 
-              if ($("#edit-modal #item-businessname").val()) {
-                data.businessName = $("#edit-modal #item-businessname").val();
-              }
+            if ($("#edit-modal #item-profilepic").val()) {
+              data.profilePic = $("#edit-modal #item-profilepic").val();
+            }
 
-              if ($("#edit-modal #item-state").val()) {
-                data.state = $("#edit-modal #item-state").val();
-              }
+            // Lambda does not accept empty array values
+            if ($("#edit-modal #item-categoriesprovided").val().length > 0) {
+              data.categoriesProvided = $("#edit-modal #item-categoriesprovided").val();
+            }
+            // identityProofs: [],
+            // certificates: [],
+            // workPhotoAlbums: [],
 
-              if ($("#edit-modal #item-profilepic").val()) {
-                data.profilePic = $("#edit-modal #item-profilepic").val();
-              }
-
-              // Lambda does not accept empty array values
-              if ($("#edit-modal #item-categoriesprovided").val().length > 0) {
-                data.categoriesProvided = $("#edit-modal #item-categoriesprovided").val();
-              }
-              // identityProofs: [],
-              // certificates: [],
-              // workPhotoAlbums: [],
-
-              console.log("Saving servee user...", JSON.stringify(data));
-
-              $.ajax({
-                url: `${usersApiBasePath}/users/${user.id}`,
-                dataType: "json",
-                method: "PUT",
-                contentType: "application/json",
-                beforeSend: (jqXHR, settings) => {
-                  jqXHR.setRequestHeader("Authorization", `Bearer ${accessJwtToken}`);
-                },
-                data: JSON.stringify(data)
-              })
-                .done((data, textStatus, jqXHR) => {
-                  logAjaxSuccess(`PUT /users/${user.id}`, data, textStatus, jqXHR);
-                  if (jqXHR.status == 200) {
-                    console.log(`User ${data.id} saved`);
+            console.log("Updated user:", data);
+            $.ajax({
+              url: `${usersApiBasePath}/users/${user.id}`,
+              dataType: "json",
+              method: "PUT",
+              contentType: "application/json",
+              beforeSend: (jqXHR, settings) => {
+                jqXHR.setRequestHeader("Authorization", `Bearer ${getBearerToken()}`);
+              },
+              data: JSON.stringify(data)
+            })
+              .done((data, textStatus, jqXHR) => {
+                logAjaxSuccess(`PUT /users/${user.id}`, data, textStatus, jqXHR);
+                switch (jqXHR.status) {
+                  case 200:
+                    console.log("User updated");
+                    //publishMessage("Web", "orgCreated", "Organization " + data.id + " created");
                     $("#edit-modal").modal("toggle");
-                    //showMessage(`'${data.firstName}' saved`);
+                    //showMessage(`'${data.name}' created`);
                     loadCards();
-                    return;
-                  } else {
-                    console.error(jqXHR);
-                  }
-                })
-                .fail((jqXHR, textStatus, errorThrown) => {
-                  logAjaxError(`PUT /users/${user.id}`, jqXHR, textStatus, errorThrown);
-                });
-            });
+                    break;
+                  default:
+                    break;
+                }
+              })
+              .fail((jqXHR, textStatus, errorThrown) => {
+                logAjaxError(`PUT /users/${user.id}`, jqXHR, textStatus, errorThrown);
+              });
           });
       });
 
@@ -1139,7 +1070,7 @@
               url: `${usersApiBasePath}/users/${user.id}`,
               dataType: "json",
               beforeSend: (jqXHR, settings) => {
-                jqXHR.setRequestHeader("Authorization", `Bearer ${accessJwtToken}`);
+                jqXHR.setRequestHeader("Authorization", `Bearer ${getBearerToken()}`);
               },
             })
               .done((data, textStatus, jqXHR) => {
@@ -1151,8 +1082,8 @@
               });
           }
         });
-      });
 
+      });
       return columnDiv;
     }
 
@@ -1162,9 +1093,7 @@
       $.ajax({
         method: "GET",
         url: `${usersApiBasePath}/cognitoUsers`,
-        beforeSend: (jqXHR, settings) => {
-          jqXHR.setRequestHeader("Authorization", `Bearer ${accessJwtToken}`);
-        },
+        beforeSend: getHeaders,
         dataType: "json"
       })
         .done((data, textStatus, jqXHR) => {
@@ -1256,9 +1185,7 @@
             dataType: "json",
             method: "POST",
             contentType: "application/json",
-            beforeSend: (jqXHR, settings) => {
-              jqXHR.setRequestHeader("Authorization", `Bearer ${accessJwtToken}`);
-            },
+            beforeSend: getHeaders,
             data: JSON.stringify(data)
           })
             .done((data, textStatus, jqXHR) => {
