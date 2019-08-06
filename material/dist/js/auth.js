@@ -1,4 +1,4 @@
-//#region Lambda
+//#region API Paths
 
 const authApiBasePath = "https://ommkdunauc.execute-api.eu-central-1.amazonaws.com/dev";
 const categoriesApiBasePath = "https://g8335hfcy0.execute-api.eu-central-1.amazonaws.com/dev";
@@ -21,7 +21,6 @@ function getBearerToken() {
     return token;
 }
 
-//TODO NEED TO CONVERT TO LOCAL TIMEZONE?
 function setTokens(tokens) {
     Cookies.set("accessToken", tokens.accessToken, { expires: new Date(tokens.accessToken.payload.exp * 1000) });
     Cookies.set("clockDrift", tokens.clockDrift);
@@ -118,7 +117,6 @@ async function refreshToken() {
         });
 }
 
-//TODO Change to cookies
 function updateTokens(data) {
 
     console.log("Updating tokens:", data);
@@ -161,21 +159,43 @@ async function getUsers() {
 
 //#endregion
 
-function handleError(functionCalled, jqXHR, textStatus, errorThrown) {
-    logAjaxError(functionCalled, jqXHR, textStatus, errorThrown);
-    if (jqXHR.status == 0) {
-        // The token probably expired. Get a new one
-        console.log("Status is 0. Trying to refresh token");
-        refreshToken().then((tokens) => {
-            updateTokens(tokens);
-            functionCalled();
-        }).catch((error) => {
-            throw new Error(`Failed to call ${functionCalled}:" ${error}`);
+//#region Reviews
+
+async function getReviews() {
+    return await $.ajax({
+        method: "GET",
+        url: `${reviewsApiBasePath}/reviews`,
+        beforeSend: getHeaders,
+        dataType: "json"
+    })
+        .done((data, textStatus, jqXHR) => {
+            logAjaxSuccess("GET /reviews", data, textStatus, jqXHR);
+            return data;
         })
-    }
+        .fail((jqXHR, textStatus, errorThrown) => {
+            handleError(getReviews, jqXHR, textStatus, errorThrown);
+        });
 }
 
-//#region Logging/Message
+async function deleteReview(reviewId) {
+    return await $.ajax({
+        method: "DELETE",
+        url: `${reviewsApiBasePath}/reviews/${reviewId}`,
+        beforeSend: getHeaders,
+        dataType: "json"
+    })
+        .done((data, textStatus, jqXHR) => {
+            logAjaxSuccess("DELETE /reviews/" + reviewId, data, textStatus, jqXHR);
+            return data;
+        })
+        .fail((jqXHR, textStatus, errorThrown) => {
+            handleError(deleteReview(reviewId), jqXHR, textStatus, errorThrown);
+        });
+}
+
+//#endregion
+
+//#region Logging/Message/Error Handling
 
 function logAjaxSuccess(apiFunction, data, textStatus, jqXHR) {
     console.log(apiFunction + " -> Data:", data);
@@ -194,8 +214,35 @@ function showError(message) {
     $("#error").show();
 }
 
+function showMessage(heading, message) {
+    $.toast({
+        heading: heading
+        , text: message
+        , position: 'top-right'
+        , loaderBg: '#ff6849'
+        , icon: 'info'
+        , hideAfter: 3500
+        , stack: 6
+    })
+
+}
+
 function clearError() {
     $("#error").hide();
+}
+
+function handleError(functionCalled, jqXHR, textStatus, errorThrown) {
+    logAjaxError(functionCalled, jqXHR, textStatus, errorThrown);
+    if (jqXHR.status == 0) {
+        // The token probably expired. Get a new one
+        console.log("Status is 0. Trying to refresh token");
+        refreshToken().then((tokens) => {
+            updateTokens(tokens);
+            functionCalled();
+        }).catch((error) => {
+            throw new Error(`Failed to call ${functionCalled}:" ${error}`);
+        })
+    }
 }
 
 //#endregion
