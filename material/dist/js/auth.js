@@ -93,7 +93,6 @@ function isLoggedIn() {
         });
 }
 
-//TODO SHOULD RETURN A PROMISE FOR USE IN GETSERVEEUSERS() AND WEB SITE
 async function refreshToken() {
     await $.ajax({
         method: "POST",
