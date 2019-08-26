@@ -653,7 +653,7 @@
 
             console.log("Updated user:", data);
             $.ajax({
-              url: `${usersApiBasePath}/users/${user.id}`,
+              url: `${authApiBasePath}/users/${user.id}`,
               dataType: "json",
               method: "PUT",
               contentType: "application/json",
@@ -704,7 +704,7 @@
             console.log("Deleting... access token:", accessToken);
             $.ajax({
               method: "DELETE",
-              url: `${usersApiBasePath}/users/${user.id}`,
+              url: `${authApiBasePath}/users/${user.id}`,
               dataType: "json",
               beforeSend: (jqXHR, settings) => {
                 jqXHR.setRequestHeader("Authorization", `Bearer ${getBearerToken()}`);
@@ -729,7 +729,7 @@
       // Get all cognito users
       $.ajax({
         method: "GET",
-        url: `${usersApiBasePath}/cognitoUsers`,
+        url: `${authApiBasePath}/cognitoUsers`,
         beforeSend: getHeaders,
         dataType: "json"
       })
@@ -818,7 +818,7 @@
 
           console.log("New user:", data);
           $.ajax({
-            url: `${usersApiBasePath}/users`,
+            url: `${authApiBasePath}/users`,
             dataType: "json",
             method: "POST",
             contentType: "application/json",
