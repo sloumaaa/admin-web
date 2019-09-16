@@ -341,6 +341,9 @@
                                         <label class="custom-control-label" for="forProfessionals">For
                                             Professionals</label>
                                     </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-info m-t-10" id="item-hardware">Hardware</button>
+                                    </div>
                                 </form>
                             </div>
                             <div class="modal-footer">
@@ -516,9 +519,7 @@
                         dataType: "json",
                         method: "PUT",
                         contentType: "application/json",
-                        beforeSend: (jqXHR, settings) => {
-                            jqXHR.setRequestHeader("Authorization", `Bearer ${localStorage.getItem('token')}`);
-                        },
+                        beforeSend: getHeaders,
                         data: JSON.stringify({
                             "name": $("#edit-modal #item-name").val(),
                             "description": $("#edit-modal #item-description").val(),
@@ -566,9 +567,7 @@
                             method: "DELETE",
                             url: `${categoriesApiBasePath}/categories/${item.id}`,
                             dataType: "json",
-                            beforeSend: (jqXHR, settings) => {
-                                jqXHR.setRequestHeader("Authorization", `Bearer ${localStorage.getItem('token')}`);
-                            },
+                            beforeSend: getHeaders,
                             cache: false
                         })
                             .done((data, textStatus, jqXHR) => {
@@ -595,15 +594,12 @@
             $("#edit-modal #save").text('Create');
             $("#edit-modal #save").unbind().click(function () {
                 console.log('Creating category...');
-                console.log("Current Access Token:", accessToken);
                 $.ajax({
                     url: `${categoriesApiBasePath}/categories`,
                     dataType: "json",
                     method: "POST",
                     contentType: "application/json",
-                    beforeSend: (jqXHR, settings) => {
-                        jqXHR.setRequestHeader("Authorization", `Bearer ${accessToken}`);
-                    },
+                    beforeSend: getHeaders,
                     data: JSON.stringify({
                         "name": $("#edit-modal #item-name").val(),
                         "description": $("#edit-modal #item-description").val(),
@@ -628,8 +624,30 @@
                     console.error("jqXHR:", jqXHR);
                     console.error("Text Status:", textStatus);
                     console.error("Error Thrown:", errorThrown);
+                    if (jqXHR.responseJSON) {
+                        alert(jqXHR.responseJSON.message);
+                    }
                 });
             })
+        }
+
+        function resetHardwareModal() {
+            $("#hardware").empty();
+
+            // Load all hardware
+            $.ajax({
+                url: `${hardwareApiBasePath}/hardware`,
+                dataType: "json",
+                method: "GET",
+                contentType: "application/json",
+                beforeSend: getHeaders
+            }).done((data, textStatus, jqXHR) => {
+                console.log(data);
+            }).fail((jqXHR, textStatus, errorThrown) => {
+                console.error("jqXHR:", jqXHR);
+                console.error("Text Status:", textStatus);
+                console.error("Error Thrown:", errorThrown);
+            });
         }
 
         // Clear modal when hidden
@@ -637,7 +655,13 @@
             resetModal();
         });
 
+        // Clear modal when hidden
+        $("#edit-hardware").on("hidden.bs.modal", function () {
+            resetHardwareModal();
+        });
+
         resetModal();
+        resetHardwareModal();
         loadCards();
 
     </script>
