@@ -6,6 +6,7 @@ const locationsApiBasePath = "https://6mo2qzbcag.execute-api.eu-central-1.amazon
 const providersApiBasePath = "https://sclx4kb3lk.execute-api.eu-central-1.amazonaws.com/dev";
 const reviewsApiBasePath = "https://2nhq1hidx6.execute-api.eu-central-1.amazonaws.com/dev";
 const quotesApiBasePath = "https://z75j3glj94.execute-api.eu-central-1.amazonaws.com/dev";
+const hardwareApiBasePath = "https://qnb9rnf3h8.execute-api.eu-central-1.amazonaws.com/dev";
 
 //#endregion
 
