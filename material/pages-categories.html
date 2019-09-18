@@ -11,6 +11,7 @@
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png">
     <title>Servee.io Admin Portal</title>
+    <link href="../assets/node_modules/bootstrap-select/bootstrap-select.min.css" rel="stylesheet" />
     <!-- Custom CSS -->
     <link href="dist/css/style.min.css" rel="stylesheet">
     <!-- page css -->
@@ -305,8 +306,7 @@
                 <div class="row">
                     <div class="col-12">
                         <h4 class="d-inline">All Categories</h4>
-                        <p class="text-muted m-t-0">Click on a category to edit it or on <b>Create New</b> to create a
-                            new one</p>
+                        <p class="text-muted m-t-0">Click on a category to edit it or on <b>Create New</b> to create a new one</p>
                         <!-- Row -->
                         <div class="row" id="cards">
                         </div>
@@ -323,6 +323,7 @@
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                             </div>
                             <div class="modal-body">
+                                <input type="hidden" name="categoryId" id="categoryId" value="">
                                 <form>
                                     <div class="form-group">
                                         <label for="item-name" class="control-label">Name:</label>
@@ -338,17 +339,65 @@
                                     </div>
                                     <div class="custom-control custom-switch">
                                         <input type="checkbox" class="custom-control-input" id="forProfessionals">
-                                        <label class="custom-control-label" for="forProfessionals">For
-                                            Professionals</label>
-                                    </div>
-                                    <div class="form-group">
-                                        <button class="btn btn-info m-t-10" id="item-hardware">Hardware</button>
+                                        <label class="custom-control-label" for="forProfessionals">For Professionals</label>
                                     </div>
                                 </form>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Close</button>
                                 <button type="button" id="save" class="btn btn-danger waves-effect waves-light"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.modal -->
+                <!-- Edit Hardware Modal -->
+                <div id="hardware-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="title">Hardware</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    Select hardware required for this category or add new hardware
+                                    <div class="form-group">
+                                        <select id="hardwareList" class="selectpicker" data-style="form-control btn-secondary" multiple>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-info waves-effect" data-toggle="modal" data-target="#hardware-add-modal"><i class="fas fa-plus"></i> Add New</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Close</button>
+                                <button type="button" id="save" class="btn btn-danger waves-effect waves-light">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.modal -->
+                <!-- Add Hardware Modal -->
+                <div id="hardware-add-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="title">Add Hardware</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="hardware-name" class="control-label">Name:</label>
+                                        <input type="text" class="form-control" id="hardware-name">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Close</button>
+                                <button type="button" id="save" class="btn btn-danger waves-effect waves-light">Add</button>
                             </div>
                         </div>
                     </div>
@@ -447,6 +496,8 @@
     <script src="../assets/node_modules/sparkline/jquery.sparkline.min.js"></script>
     <!-- Sweet Alert-->
     <script src="../assets/node_modules/sweetalert/sweetalert.min.js"></script>
+    <!-- Boostrap Select -->
+    <script src="../assets/node_modules/bootstrap-select/bootstrap-select.min.js" type="text/javascript"></script>
     <!-- AWS -->
     <script src="./dist/js/amazon-cognito-identity.min.js"></script>
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.487.0.min.js"></script>
@@ -504,8 +555,9 @@
             $("<h4/>", { class: "card-title" }).text(item.name).appendTo(bodyCardDiv);
             $("<p/>", { class: "card-text" }).text(item.description).appendTo(bodyCardDiv);
 
-            var editButton = $("<button/>", { class: "btn btn-primary", "data-toggle": "modal", "data-target": "#edit-modal" }).text("Edit").appendTo(bodyCardDiv);
+            var editButton = $("<button/>", { class: "btn btn-info", "data-toggle": "modal", "data-target": "#edit-modal" }).text("Edit").appendTo(bodyCardDiv);
             editButton.on("click", () => {
+                $("#edit-modal #categoryId").val(item.id);
                 $("#edit-modal #title").html(item.name);
                 $("#edit-modal #item-name").val(item.name);
                 $("#edit-modal #item-description").val(item.description);
@@ -533,6 +585,42 @@
                             //publishMessage("Web", "orgUpdated", "Organization " + data.id + " saved");
                             $("#edit-modal").modal('toggle');
                             //showMessage(`'${data.name}' saved`);
+                            loadCards();
+                            return;
+                        } else {
+                            console.error(jqXHR);
+                        }
+                    }).fail((jqXHR, textStatus, errorThrown) => {
+                        console.error("jqXHR:", jqXHR);
+                        console.error("Text Status:", textStatus);
+                        console.error("Error Thrown:", errorThrown);
+                    });
+                });
+            });
+
+            var hardwareButton = $("<button/>", { class: "btn btn-warning ml-2", "data-toggle": "modal", "data-target": "#hardware-modal" }).text("Hardware").appendTo(bodyCardDiv);
+            hardwareButton.on("click", () => {
+                $("#hardware-modal #title").html(`Hardware for ${item.name}`);
+                console.log("Item.Hardware:", item.hardware);
+                $("#hardware-modal #hardwareList").val(item.hardware);
+                $("#hardware-modal #hardwareList").selectpicker("refresh");
+                $("#hardware-modal #save").text('Save');
+                $("#hardware-modal #save").unbind().click(function () {
+                    console.log('Saving hardware for category:', item.name);
+                    $("#hardware-modal #hardwareList").selectpicker("refresh");
+                    $.ajax({
+                        url: `${categoriesApiBasePath}/categories/${item.id}`,
+                        dataType: "json",
+                        method: "PATCH",
+                        contentType: "application/json",
+                        beforeSend: getHeaders,
+                        data: JSON.stringify({
+                            "hardware": $("#hardware-modal #hardwareList").val()
+                        })
+                    }).done((data, textStatus, jqXHR) => {
+                        if (jqXHR.status == 200) {
+                            console.log(`Hardware for category ${data.id} has been saved with: `, data.hardware);
+                            $("#hardware-modal").modal('toggle');
                             loadCards();
                             return;
                         } else {
@@ -585,6 +673,37 @@
             return columnDiv;
         }
 
+        $("#hardware-add-modal #save").click((e) => {
+            e.preventDefault();
+
+            let hardwareName = $("#hardware-add-modal #hardware-name").val();
+            console.log('Adding Hardware:', hardwareName);
+            $.ajax({
+                url: `${hardwareApiBasePath}/hardware`,
+                dataType: "json",
+                method: "POST",
+                contentType: "application/json",
+                beforeSend: getHeaders,
+                data: JSON.stringify({
+                    "name": hardwareName
+                })
+            }).done((data, textStatus, jqXHR) => {
+                if (jqXHR.status == 200) {
+                    console.log(`Hardware ${data.id} added`);
+                    $("#hardware-add-modal").modal('toggle');
+                    loadHardware();
+                    //TODO Need to add new hardware to list
+                    return;
+                } else {
+                    console.error(jqXHR);
+                }
+            }).fail((jqXHR, textStatus, errorThrown) => {
+                console.error("jqXHR:", jqXHR);
+                console.error("Text Status:", textStatus);
+                console.error("Error Thrown:", errorThrown);
+            });
+        });
+
         function resetModal() {
             $("#edit-modal #title").html("New Category");
             $("#edit-modal #item-name").val("");
@@ -632,7 +751,18 @@
         }
 
         function resetHardwareModal() {
-            $("#hardware").empty();
+            loadHardware();
+        }
+
+        function resetAddHardwareModal() {
+            $("#hardware-add-modal #hardware-name").val("");
+        }
+
+        var hardwareTest;
+
+        function loadHardware() {
+            $("#hardware-modal #hardwareList").empty();
+            $("#hardware-modal #hardwareList").selectpicker("refresh");
 
             // Load all hardware
             $.ajax({
@@ -643,6 +773,12 @@
                 beforeSend: getHeaders
             }).done((data, textStatus, jqXHR) => {
                 console.log(data);
+                // Sort hardware by "name"
+                data.sort((a, b) => (a.name > b.name) ? 1 : -1)
+                $.each(data, (i, hardwareItem) => {
+                    $("#hardware-modal #hardwareList").append($("<option/>", { text: hardwareItem.name, value: hardwareItem.id }));
+                });
+                $("#hardware-modal #hardwareList").selectpicker("refresh");
             }).fail((jqXHR, textStatus, errorThrown) => {
                 console.error("jqXHR:", jqXHR);
                 console.error("Text Status:", textStatus);
@@ -656,12 +792,18 @@
         });
 
         // Clear modal when hidden
-        $("#edit-hardware").on("hidden.bs.modal", function () {
+        $("#hardware-modal").on("hidden.bs.modal", function () {
             resetHardwareModal();
+        });
+
+        // Clear modal when hidden
+        $("#hardware-add-modal").on("hidden.bs.modal", function () {
+            resetAddHardwareModal();
         });
 
         resetModal();
         resetHardwareModal();
+        resetAddHardwareModal();
         loadCards();
 
     </script>
